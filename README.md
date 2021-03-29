@@ -24,11 +24,11 @@
     }
   }
   ```
-- oppgaveComplete
+- varselOppgaveComplete
   ```json
   {
     "id": "6add527f-cb94-4033-889c-98497c216b06",
-    "type": "OPPGAVE_COMPLETE",
+    "type": "VARSEL_OPPGAVE_COMPLETE",
     "timestamp": ""
   }
   ```
