@@ -8,13 +8,11 @@ import no.nav.fo.veilarbvarsel.kafka.consumer.KafkaConsumeExecutor
 import no.nav.fo.veilarbvarsel.kafka.consumer.KafkaConsumerRegistry
 import no.nav.fo.veilarbvarsel.mq.MQConfiguration
 import no.nav.fo.veilarbvarsel.mq.producer.VarselMedHandligProducer
-import no.nav.fo.veilarbvarsel.mq.VarselMedHandlingConsumer
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 fun main() {
-    val consumer = VarselMedHandlingConsumer(MQConfiguration.connectionFactory()).consume()
     val producer = VarselMedHandligProducer(MQConfiguration.connectionFactory())
     producer.send("1", UUID.randomUUID().toString())
 
