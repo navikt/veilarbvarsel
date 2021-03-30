@@ -1,23 +1,17 @@
 package no.nav.fo.veilarbvarsel
 
 import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.fo.veilarbvarsel.db.DB
 import no.nav.fo.veilarbvarsel.db.TestSchema
 import no.nav.fo.veilarbvarsel.kafka.consumer.KafkaConsumeExecutor
 import no.nav.fo.veilarbvarsel.kafka.consumer.KafkaConsumerRegistry
-import no.nav.fo.veilarbvarsel.kafka.consumer.KafkaRecordConsumer
-import no.nav.fo.veilarbvarsel.kafka.producer.KafkaRecordProducer
 import no.nav.fo.veilarbvarsel.mq.MQConfiguration
-import no.nav.fo.veilarbvarsel.mq.VarselMedHandligProducer
+import no.nav.fo.veilarbvarsel.mq.producer.VarselMedHandligProducer
 import no.nav.fo.veilarbvarsel.mq.VarselMedHandlingConsumer
-import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
-import java.util.logging.Level
 
 fun main() {
     val consumer = VarselMedHandlingConsumer(MQConfiguration.connectionFactory()).consume()

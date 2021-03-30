@@ -1,7 +1,9 @@
 # VeilarbVarsel
 
 ## Todos:
-- Koble opp mot MQ, bruke den gamle funksjonen
+- Sende melding på 3 forskjellige MQ
+- Motta melding på Kafka
+- bruke den gamle funksjonen
 - Utforske topic `aapen-dok-notifikasjon-status` for notifikasjoner (https://navikt.github.io/brukernotifikasjon-docs/eksternvarsling/)
 - Trenger vi lagre?
 - Grafana

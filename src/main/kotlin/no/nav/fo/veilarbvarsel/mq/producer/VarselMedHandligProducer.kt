@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.mq
+package no.nav.fo.veilarbvarsel.mq.producer
 
 import no.nav.melding.virksomhet.varselmedhandling.v1.varselmedhandling.AktoerId
 import no.nav.melding.virksomhet.varselmedhandling.v1.varselmedhandling.ObjectFactory
@@ -8,12 +8,16 @@ import javax.jms.ConnectionFactory
 import javax.xml.bind.JAXBContext
 
 val context = JAXBContext.newInstance(VarselMedHandling::class.java)
+val queue = System.getenv("VARSEL_MED_HANDLING_MQ") ?: "DEV.QUEUE.1"
 
-class VarselMedHandligProducer(val connectionFactory: ConnectionFactory) : MQProducer<VarselMedHandling>() {
+val PARAGAF8_VARSEL_ID = "DittNAV_000008"
 
-    val PARAGAF8_VARSEL_ID = "DittNAV_000008"
+class VarselMedHandligProducer(connectionFactory: ConnectionFactory) : MQProducer<VarselMedHandling>(
+    connectionFactory,
+    context,
+    queue
+) {
 
-    val queue = System.getenv("VARSEL_MED_HANDLING_MQ") ?: "DEV.QUEUE.1"
 
     fun send(aktorId: String, varselbestillingId: String) {
         val mottaker = AktoerId()
@@ -33,22 +37,6 @@ class VarselMedHandligProducer(val connectionFactory: ConnectionFactory) : MQPro
             .parameterListe
             .add(parameter)
 
-        val connection = connectionFactory.createConnection()
-        connection.start()
-
-        val session = connection.createSession()
-
-        val message = session.createTextMessage(
-            marshall(
-                ObjectFactory().createVarselMedHandling(varselMedHandling),
-                context
-            )
-        )
-
-        val destination = session.createQueue(queue)
-        session.createProducer(destination).send(message)
-
-        connection.close()
-
+        sendToMq(ObjectFactory().createVarselMedHandling(varselMedHandling))
     }
 }
