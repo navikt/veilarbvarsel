@@ -1,7 +1,10 @@
 # VeilarbVarsel
 
 ## Todos:
+- Koble opp mot MQ, bruke den gamle funksjonen
 - Utforske topic `aapen-dok-notifikasjon-status` for notifikasjoner (https://navikt.github.io/brukernotifikasjon-docs/eksternvarsling/)
+- Trenger vi lagre?
+- Grafana
 
 
 ## Kafka
@@ -17,6 +20,7 @@
     "timestamp": "",
     "version": 1,
     "payload": {
+      "aktoerId": "89300080101",
       "fnr": "10108000398",
       "type": "OPPGAVE", //OPPGAVE, MELDING
       "message": "Dette er en generell varsel",

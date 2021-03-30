@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+# Kafka
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
@@ -33,6 +34,7 @@ services:
       SERVER_SERVLET_CONTEXTPATH: "/"
     depends_on:
       - kafka
+# Database
   postgres:
     image: 'postgres:latest'
     environment:
@@ -46,3 +48,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+# IBM MQ (Docs: https://github.com/ibm-messaging/mq-container/blob/master/docs/developer-config.md)
+  mqseries:
+    image: ibmcom/mq:latest
+    ports:
+      - "1414:1414"
+      - "9443:9443"
+    hostname: mq
+    environment:
+      - LICENSE=accept
+      - MQ_QMGR_NAME=QM1
+    container_name: mqserver
+    stdin_open: true
+    tty: true
+    restart: always
