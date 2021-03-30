@@ -1,10 +1,10 @@
-package no.nav.fo.veilarbvarsel.mq
+package no.nav.fo.veilarbvarsel.it.utils
 
 import javax.jms.ConnectionFactory
 
-class VarselMedHandlingConsumer(val connectionFactory: ConnectionFactory) {
-
-    val queue = System.getenv("VARSEL_MED_HANDLING_MQ") ?: "DEV.QUEUE.1"
+class MqConsumer(
+    val connectionFactory: ConnectionFactory,
+    val queue: String) {
 
     fun consume() {
         val connection = connectionFactory.createConnection()
