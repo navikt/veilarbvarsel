@@ -14,21 +14,39 @@ abstract class MQProducer<T>(
     private val queueName: String
 ) {
 
+    protected fun marshallAndSend(callId: String, e: JAXBElement<T>) {
+        mqSend(marshall(e, context), callId)
+    }
 
-    protected fun sendToMq(e: JAXBElement<T>) {
+    protected fun marshallAndSend(callId: String, e: T) {
+        mqSend(marshall(e, context), callId)
+    }
+
+    private fun mqSend(messageString: String, varselid: String) {
         val connection = connectionFactory.createConnection()
         connection.start()
         val session = connection.createSession()
-        val message = session.createTextMessage(marshall(e, context))
+
+        val message = session.createTextMessage(messageString)
+        message.setStringProperty("callId", varselid)
 
         val destination = session.createQueue(queueName)
         session.createProducer(destination).send(message)
 
         connection.close()
-
     }
 
     private fun marshall(e: JAXBElement<T>, context: JAXBContext): String {
+        val writer = StringWriter()
+        val marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true)
+        marshaller.marshal(e, StreamResult(writer))
+
+        return writer.toString()
+    }
+
+    private fun marshall(e: T, context: JAXBContext): String {
         val writer = StringWriter()
         val marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
