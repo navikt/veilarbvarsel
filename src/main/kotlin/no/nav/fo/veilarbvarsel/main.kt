@@ -23,6 +23,7 @@ fun main() {
         override fun handle(record: ConsumerRecord<String, String>) {
             val threadId = Thread.currentThread().id
             println("(Thread $threadId) Message: ${record.value()}")
+            throw UnsatisfiedLinkError("kake")
         }
 
     }
@@ -31,6 +32,7 @@ fun main() {
 
         for(i in 0..100) {
         producer.send("Topic1", "oppfolgingsperiode_x", "Melding $i")
+        println(consumer.isHealthy())
         Thread.sleep(2000)
     }
 
