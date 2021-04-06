@@ -49,7 +49,7 @@ abstract class KafkaRecordConsumerTwo(
     }
 
     fun isHealthy(): Boolean {
-        return job.isCancelled
+        return !job.isCancelled
     }
 
     abstract fun handle(record: ConsumerRecord<String, String>)
