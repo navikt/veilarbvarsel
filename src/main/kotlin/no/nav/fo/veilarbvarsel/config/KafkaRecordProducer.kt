@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.kafka.producer
+package no.nav.fo.veilarbvarsel.config
 
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
@@ -8,13 +8,16 @@ import org.apache.kafka.common.serialization.StringSerializer
 import java.util.*
 import java.util.concurrent.Future
 
-class KafkaRecordProducer {
+class KafkaRecordProducer (
+    host: String,
+    port: Int
+) {
 
     val producer: Producer<String, String>
 
-    constructor() {
+    init {
         val props = Properties()
-        props["bootstrap.servers"] = "localhost:9092"
+        props["bootstrap.servers"] = "$host:$port"
         props["key.serializer"] = StringSerializer::class.java
         props["value.serializer"] = StringSerializer::class.java
 
@@ -25,5 +28,4 @@ class KafkaRecordProducer {
         val record = ProducerRecord(topic, key, value)
         return producer.send(record)
     }
-
 }
