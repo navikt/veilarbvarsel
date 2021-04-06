@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbvarsel.config
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -14,6 +15,7 @@ abstract class KafkaRecordConsumerTwo(
 
     val props = Properties()
     var running = true
+    lateinit var job: Job
 
     init {
         props["bootstrap.servers"] = "localhost:9092"
@@ -25,7 +27,7 @@ abstract class KafkaRecordConsumerTwo(
     fun start() {
         running = true
 
-        GlobalScope.launch {
+        job = GlobalScope.launch {
             val consumer = KafkaConsumer<String, String>(props).apply {
                 subscribe(topics)
             }
@@ -44,6 +46,10 @@ abstract class KafkaRecordConsumerTwo(
 
     fun stop() {
         running = false
+    }
+
+    fun isHealthy(): Boolean {
+        return job.isCancelled
     }
 
     abstract fun handle(record: ConsumerRecord<String, String>)
