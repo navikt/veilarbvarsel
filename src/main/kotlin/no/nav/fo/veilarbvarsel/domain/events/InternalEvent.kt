@@ -33,3 +33,17 @@ data class CreateVarselPayload(
     val sikkerhetsnivaa: Int,
     val visibleUntil: LocalDateTime?
 ) : Payload()
+
+data class VarselCreatedPayload(
+    val varselId: String,
+    val varselType: VarselType,
+    val fodselsnummer: String,
+    val groupId: String,
+    val message: String,
+    val sikkerhetsnivaa: Int,
+    val visibleUntil: LocalDateTime?
+) : Payload()
+
+data class CancelVarselPayload(
+    val varselId: String
+) : Payload()

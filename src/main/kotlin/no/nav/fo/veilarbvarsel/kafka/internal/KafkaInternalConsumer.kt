@@ -1,14 +1,13 @@
-package no.nav.fo.veilarbvarsel.kafka
+package no.nav.fo.veilarbvarsel.kafka.internal
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.fo.veilarbvarsel.domain.events.CreateVarselPayload
-import no.nav.fo.veilarbvarsel.domain.events.EventType
-import no.nav.fo.veilarbvarsel.domain.events.InternalEvent
-import no.nav.fo.veilarbvarsel.domain.events.Payload
+import no.nav.fo.veilarbvarsel.domain.events.*
+import no.nav.fo.veilarbvarsel.exceptions.VarselCreationError
+import no.nav.fo.veilarbvarsel.exceptions.VarselError
 import no.nav.fo.veilarbvarsel.features.ClosableJob
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -60,7 +59,11 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
                 records.iterator().forEach {
                     val data = toKafkaInternalMessage(it.value())
                     if (data.isPresent) {
-                        handle(data.get())
+                        try {
+                            handle(data.get())
+                        } catch (e: VarselError) {
+                            handleError(e)
+                        }
                     }
                 }
             }
@@ -68,7 +71,6 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
 
         running = false
     }
-
     override fun close() {
         logger.info("Closing Kafka Internal Consumer...")
         shutdown = true
@@ -81,18 +83,41 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
 
     fun handle(data: InternalEvent) {
         when (data.payload) {
-            is CreateVarselPayload -> service.add(
-                data.payload.varselId,
-                data.payload.varselType,
-                data.payload.fodselsnummer,
-                data.payload.groupId,
-                data.payload.message,
-                data.payload.sikkerhetsnivaa,
-                data.payload.visibleUntil
-            )
+            is CreateVarselPayload -> {
+                logger.info("${data.event}: ${data.payload.varselId}")
+                service.add(
+                    data.transactionId,
+                    data.payload.varselId,
+                    data.payload.varselType,
+                    data.payload.fodselsnummer,
+                    data.payload.groupId,
+                    data.payload.message,
+                    data.payload.sikkerhetsnivaa,
+                    data.payload.visibleUntil
+                )
+            }
+            is CancelVarselPayload -> {
+                logger.info("${data.event}: ${data.payload.varselId}")
+                service.cancel(
+                    data.payload.varselId
+                )
+            }
+            is VarselCreatedPayload -> {
+                logger.info("${data.event}: ${data.payload.varselId}")
+            }
             else -> TODO("Not yet implemented")
         }
+    }
 
+    private fun handleError(e: VarselError) {
+        when (e) {
+            is VarselCreationError -> logger.error("Error", e)
+            else -> logger.error("Error", e)
+        }
+    }
+
+
+    private fun woo(payload: VarselCreatedPayload) {
     }
 
     private fun toKafkaInternalMessage(message: String): Optional<InternalEvent> {
@@ -112,7 +137,8 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
         if (type.equals("VARSEL")) {
             payload = when (event) {
                 EventType.CREATE -> objectMapper.treeToValue(jsonStruct["payload"], CreateVarselPayload::class.java)
-                EventType.CANCEL -> TODO()
+                EventType.CREATED -> objectMapper.treeToValue(jsonStruct["payload"], VarselCreatedPayload::class.java)
+                EventType.CANCEL -> objectMapper.treeToValue(jsonStruct["payload"], CancelVarselPayload::class.java)
                 else -> null
             }
         }

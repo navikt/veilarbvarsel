@@ -26,16 +26,13 @@ class VarselSender(val service: VarselService) : ClosableJob {
         })
 
         while (!shutdown) {
-            logger.info("Sending varsler!")
-            val varsler = service.getAllNotSendingOrCanceled(LocalDateTime.now().minusMinutes(2))
+            val varsler = service.getAllNotSendingOrCanceled(LocalDateTime.now().minusMinutes(1))
 
             varsler.forEach { varsel ->
 
                 //FIXME Send to Varsel
                 service.sending(varsel.varselId)
-                logger.info("   Sending varsel with id ${varsel.varselId}")
                 service.sent(varsel.varselId)
-                logger.info("   Sent varsel with id ${varsel.varselId}")
             }
 
 

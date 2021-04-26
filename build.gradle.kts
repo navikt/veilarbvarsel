@@ -10,6 +10,8 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     jcenter()
+    maven("https://packages.confluent.io/maven/")
+    maven("https://jitpack.io")
 }
 
 val ktor_version = "1.5.0"
@@ -19,9 +21,13 @@ val coroutines_version = "1.4.3"
 val postgresql_version = "42.2.18"
 val logback_version = "1.2.3"
 val kafka_version = "2.7.0"
+val avro_version = "1.8.2"
+val confluent_version = "5.0.2"
 val jackson_version = "2.12.3"
 
 val junit_version = "5.6.0"
+
+val brukernotifikasjon_version = "1.2021.01.18-11.12-b9c8c40b98d1"
 
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
@@ -48,7 +54,13 @@ dependencies {
 
     // Misc
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
+    // Kafka
     implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafka_version)
+
+    implementation(group = "com.github.navikt", name = "brukernotifikasjon-schemas", version = brukernotifikasjon_version)
+    implementation("org.apache.avro", "avro", avro_version)
+    implementation("io.confluent", "kafka-streams-avro-serde", confluent_version)
 
     // Test
     testImplementation(group = "io.ktor", name = "ktor-service-test-host", version = ktor_version)

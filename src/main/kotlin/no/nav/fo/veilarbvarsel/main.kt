@@ -3,16 +3,21 @@ package no.nav.fo.veilarbvarsel
 import io.ktor.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
 import no.nav.fo.veilarbvarsel.domain.VarselType
-import no.nav.fo.veilarbvarsel.domain.events.CreateVarselPayload
-import no.nav.fo.veilarbvarsel.domain.events.InternalEvent
 import no.nav.fo.veilarbvarsel.features.BackgroundJob
-import no.nav.fo.veilarbvarsel.kafka.KafkaInternalConsumer
-import no.nav.fo.veilarbvarsel.test.InternalProducer
+import no.nav.fo.veilarbvarsel.kafka.brukernotifikasjon.BrukerNotifikasjonBeskjedProducer
+import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
+import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
+import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.varsel.VarselSender
-import no.nav.fo.veilarbvarsel.varsel.VarselService
+import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
+import org.joda.time.LocalDateTime
+import org.slf4j.LoggerFactory
+import java.lang.Exception
+import java.net.URL
 import java.util.*
+
+val logger = LoggerFactory.getLogger("Main")
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -34,13 +39,46 @@ fun Application.server() {
         job = VarselSender(service)
     }
 
-    InternalProducer.createVarsel(
+    BrukerNotifikasjonBeskjedProducer.send(
         UUID.randomUUID().toString(),
+        "10108003980",
+        "Group_1",
+        "Dette er en test",
+        URL("https://www.nav.no"),
+        4,
+        LocalDateTime.now().plusHours(1),
+        object : KafkaCallback {
+            override fun onSuccess() {
+                logger.info("[BRUKERNOTIFIKASJON] Sent message")
+            }
+
+            override fun onFailure(exception: Exception) {
+                logger.info("[BRUKERNOTIFIKASJON] Failed to send message", exception)
+            }
+
+        }
+    )
+
+//    while (true) {
+//        Thread.sleep(1000)
+//        sendVarsel()
+//    }
+
+}
+
+fun sendVarsel() {
+    val transactionId = UUID.randomUUID()
+    val id = UUID.randomUUID().toString()
+
+    InternalEventProducer.createVarsel(
+        transactionId,
+        id,
         VarselType.MELDING,
         "12345678910",
         "groupx",
         "Dette er en melding",
         4,
-        null
-    )
+        null,
+    null)
+
 }

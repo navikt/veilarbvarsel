@@ -4,13 +4,14 @@ import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.kafka.utils.KafkaJsonSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.LoggerFactory
 import java.util.*
 
 interface KafkaMessageProducer<K, V> {
-    fun send(topic: String, key: K, value: V, callback: KafkaCallback)
+    fun send(topic: String, key: K, value: V, callback: KafkaCallback?)
 }
 
 class KafkaProducer<K, V> : KafkaMessageProducer<K, V> {
@@ -22,13 +23,13 @@ class KafkaProducer<K, V> : KafkaMessageProducer<K, V> {
         val host = System.getenv("KAFKA_HOST") ?: "localhost"
         val port = System.getenv("KAFKA_PORT") ?: 9092
 
-        val props = Properties()
+        val properties = Properties()
 
-        props["bootstrap.servers"] = "$host:$port"
-        props["key.serializer"] = StringSerializer::class.java
-        props["value.serializer"] = KafkaJsonSerializer::class.java
+        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = "$host:$port"
+        properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaJsonSerializer::class.java
 
-        this.producer = KafkaProducer(props)
+        this.producer = KafkaProducer(properties)
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
@@ -41,14 +42,14 @@ class KafkaProducer<K, V> : KafkaMessageProducer<K, V> {
     }
 
 
-    override fun send(topic: String, key: K, value: V, callback: KafkaCallback) {
+    override fun send(topic: String, key: K, value: V, callback: KafkaCallback?) {
         val record = ProducerRecord(topic, key, value)
 
         producer.send(record) { _, exception ->
             if (exception == null) {
-                callback.onSuccess()
+                callback?.onSuccess()
             } else {
-                callback.onFailure(exception)
+                callback?.onFailure(exception)
             }
         }
     }

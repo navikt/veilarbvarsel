@@ -9,17 +9,17 @@ import no.nav.fo.veilarbvarsel.domain.VarselDAO.asVarsel
 import no.nav.fo.veilarbvarsel.domain.VarselDAO.status
 import no.nav.fo.veilarbvarsel.domain.VarselStatus
 import no.nav.fo.veilarbvarsel.domain.VarselType
-import no.nav.fo.veilarbvarsel.domain.events.CreateVarselPayload
-import no.nav.fo.veilarbvarsel.domain.events.InternalEvent
-import no.nav.fo.veilarbvarsel.kafka.KafkaInternalConsumer
+import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
+import java.util.*
 import java.util.stream.Collectors
 
 interface VarselService {
     fun add(
+        transactionId: UUID,
         varselId: String,
         type: VarselType,
         fodselsnummer: String,
@@ -42,6 +42,7 @@ class VarselServiceImpl : VarselService {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun add(
+        transactionId: UUID,
         varselId: String,
         type: VarselType,
         fodselsnummer: String,
@@ -68,8 +69,6 @@ class VarselServiceImpl : VarselService {
                 it[received] = LocalDateTime.now().toDateTime()
             }
         }
-
-        logger.info("Added varsel with id $varselId")
     }
 
     override fun cancel(varselId: String) {
@@ -92,6 +91,8 @@ class VarselServiceImpl : VarselService {
                 it[status] = VarselStatus.CANCELED.name
                 it[canceled] = LocalDateTime.now().toDateTime()
             }
+
+            // FIXME Add Canceled message
         }
     }
 
@@ -137,6 +138,8 @@ class VarselServiceImpl : VarselService {
                 it[status] = VarselStatus.SENT.name
                 it[sent] = LocalDateTime.now().toDateTime()
             }
+
+            InternalEventProducer.varselCreated(null, varsel, null)
         }
     }
 
