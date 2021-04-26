@@ -39,13 +39,7 @@ interface VarselService {
 }
 
 class VarselServiceImpl : VarselService {
-    private val sender: VarselSender = VarselSender(this)
-
     private val logger = LoggerFactory.getLogger(this.javaClass)
-
-    init {
-        sender.start()
-    }
 
     override fun add(
         varselId: String,
@@ -169,28 +163,4 @@ class VarselServiceImpl : VarselService {
                 .collect(Collectors.toSet())
         }
     }
-
-    private fun setupInternalConsumer(topic: String): KafkaInternalConsumer {
-        val consumer = object : KafkaInternalConsumer(topic) {
-
-            override fun handle(data: InternalEvent) {
-                when (data.payload) {
-                    is CreateVarselPayload -> add(
-                        data.payload.varselId,
-                        data.payload.varselType,
-                        data.payload.fodselsnummer,
-                        data.payload.groupId,
-                        data.payload.message,
-                        data.payload.sikkerhetsnivaa,
-                        data.payload.visibleUntil
-                    )
-                    else -> TODO("Not yet implemented")
-                }
-            }
-        }
-
-        return consumer
-    }
-
-
 }

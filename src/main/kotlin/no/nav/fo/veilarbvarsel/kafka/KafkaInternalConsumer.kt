@@ -5,14 +5,12 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import no.nav.fo.veilarbvarsel.domain.events.CreateVarselPayload
 import no.nav.fo.veilarbvarsel.domain.events.EventType
 import no.nav.fo.veilarbvarsel.domain.events.InternalEvent
 import no.nav.fo.veilarbvarsel.domain.events.Payload
 import no.nav.fo.veilarbvarsel.features.ClosableJob
+import no.nav.fo.veilarbvarsel.varsel.VarselService
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.joda.time.LocalDateTime
@@ -20,11 +18,13 @@ import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.*
 
-abstract class KafkaInternalConsumer(val topic: String): ClosableJob {
+class KafkaInternalConsumer(val service: VarselService): ClosableJob {
 
     val props = Properties()
+    val topic = System.getenv("KAFKA_INTERNAL_TOPIC")?: "TEST_INTERNAL_TOPIC"
+
+    var shutdown = false
     var running = false
-    lateinit var job: Job
 
     val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -42,38 +42,58 @@ abstract class KafkaInternalConsumer(val topic: String): ClosableJob {
         logger.info("Starting Kafka Internal Consumer")
         running = true
 
-        job = GlobalScope.launch {
-            val consumer = KafkaConsumer<String, String>(props).apply {
-                subscribe(listOf(topic))
+        Runtime.getRuntime().addShutdownHook(object : Thread() {
+            override fun run() {
+                close()
             }
+        })
 
-            consumer.use {
-                while (running) {
-                    val records = consumer.poll(Duration.ofMillis(100))
 
-                    records.iterator().forEach {
-                        val data = toKafkaInternalMessage(it.value())
-                        if (data.isPresent) {
-                            handle(data.get())
-                        }
+        val consumer = KafkaConsumer<String, String>(props).apply {
+            subscribe(listOf(topic))
+        }
+
+        consumer.use {
+            while (!shutdown) {
+                val records = consumer.poll(Duration.ofMillis(100))
+
+                records.iterator().forEach {
+                    val data = toKafkaInternalMessage(it.value())
+                    if (data.isPresent) {
+                        handle(data.get())
                     }
                 }
             }
         }
+
+        running = false
     }
 
     override fun close() {
-        if (job == null) {
-            return
-        }
+        logger.info("Closing Kafka Internal Consumer...")
+        shutdown = true
 
-        running = false
-        while (job.isActive) {
+        while (running) {
             Thread.sleep(100)
         }
+        logger.info("Kafka Internal Consumer Closed!")
     }
 
-    abstract fun handle(data: InternalEvent)
+    fun handle(data: InternalEvent) {
+        when (data.payload) {
+            is CreateVarselPayload -> service.add(
+                data.payload.varselId,
+                data.payload.varselType,
+                data.payload.fodselsnummer,
+                data.payload.groupId,
+                data.payload.message,
+                data.payload.sikkerhetsnivaa,
+                data.payload.visibleUntil
+            )
+            else -> TODO("Not yet implemented")
+        }
+
+    }
 
     private fun toKafkaInternalMessage(message: String): Optional<InternalEvent> {
         val objectMapper = jacksonObjectMapper().apply {

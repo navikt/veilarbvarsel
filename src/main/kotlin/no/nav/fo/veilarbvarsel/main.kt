@@ -10,6 +10,7 @@ import no.nav.fo.veilarbvarsel.domain.events.InternalEvent
 import no.nav.fo.veilarbvarsel.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.kafka.KafkaInternalConsumer
 import no.nav.fo.veilarbvarsel.test.InternalProducer
+import no.nav.fo.veilarbvarsel.varsel.VarselSender
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 import java.util.*
 
@@ -25,9 +26,12 @@ fun Application.server() {
 
     val service = VarselServiceImpl()
 
-    install(BackgroundJob.BackgroundJobFeature) {
-        name = "Kafka Internal Consumer"
-        job = setupInternalConsumer(service)
+    install(BackgroundJob.BackgroundJobFeature("Kafka Internal Consumer")) {
+        job = KafkaInternalConsumer(service)
+    }
+
+    install(BackgroundJob.BackgroundJobFeature("Varsel Sender")) {
+        job = VarselSender(service)
     }
 
     InternalProducer.createVarsel(
@@ -39,26 +43,4 @@ fun Application.server() {
         4,
         null
     )
-}
-
-fun setupInternalConsumer(service: VarselService): KafkaInternalConsumer {
-    val topic = System.getenv("KAFKA_INTERNAL_TOPIC")?: "TEST_INTERNAL_TOPIC"
-
-    return object : KafkaInternalConsumer(topic) {
-
-        override fun handle(data: InternalEvent) {
-            when (data.payload) {
-                is CreateVarselPayload -> service.add(
-                    data.payload.varselId,
-                    data.payload.varselType,
-                    data.payload.fodselsnummer,
-                    data.payload.groupId,
-                    data.payload.message,
-                    data.payload.sikkerhetsnivaa,
-                    data.payload.visibleUntil
-                )
-                else -> TODO("Not yet implemented")
-            }
-        }
-    }
 }

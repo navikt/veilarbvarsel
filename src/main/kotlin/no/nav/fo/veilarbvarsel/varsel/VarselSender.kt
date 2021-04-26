@@ -1,49 +1,59 @@
 package no.nav.fo.veilarbvarsel.varsel
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import no.nav.fo.veilarbvarsel.features.ClosableJob
 import no.nav.fo.veilarbvarsel.kafka.KafkaProducer
 import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
 
-class VarselSender(val service: VarselService) {
+class VarselSender(val service: VarselService) : ClosableJob {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
-    private val varselOutgoingTopic: String = System.getenv("TOPIC_VARSEL_OUTGOING")?: "varsel_outgoing"
+    private val varselOutgoingTopic: String = System.getenv("TOPIC_VARSEL_OUTGOING") ?: "varsel_outgoing"
 
+    var shutdown = false
     var running = false
-    lateinit var job: Job
 
     val producer = KafkaProducer<String, String>()
 
-    fun start() {
+    override fun run() {
+        logger.info("Starting Varsel Sender")
         running = true
 
-        job = GlobalScope.launch {
-            logger.info("Varsel Sender started.")
+        Runtime.getRuntime().addShutdownHook(object : Thread() {
+            override fun run() {
+                close()
+            }
+        })
 
-            while(running) {
-                logger.info("Sending varsler!")
-                val varsler = service.getAllNotSendingOrCanceled(LocalDateTime.now().minusMinutes(2))
+        while (!shutdown) {
+            logger.info("Sending varsler!")
+            val varsler = service.getAllNotSendingOrCanceled(LocalDateTime.now().minusMinutes(2))
 
-                varsler.forEach { varsel ->
+            varsler.forEach { varsel ->
 
-                    //FIXME Send to Varsel
-                    service.sending(varsel.varselId)
-                    logger.info("   Sending varsel with id ${varsel.varselId}")
-                    service.sent(varsel.varselId)
-                    logger.info("   Sent varsel with id ${varsel.varselId}")
-                }
-
-
-                delay(60000)
+                //FIXME Send to Varsel
+                service.sending(varsel.varselId)
+                logger.info("   Sending varsel with id ${varsel.varselId}")
+                service.sent(varsel.varselId)
+                logger.info("   Sent varsel with id ${varsel.varselId}")
             }
 
-            logger.info("Varsel Sender stopped.")
+
+            Thread.sleep(5000)
         }
 
+        running = false
     }
 
+    override fun close() {
+        logger.info("Closing Varsel Sender...")
+
+        shutdown = true
+
+        while (running) {
+            Thread.sleep(100)
+        }
+
+        logger.info("Varsel Sender Closed!")
+    }
 }
