@@ -65,8 +65,6 @@ dependencies {
     implementation("io.confluent", "kafka-streams-avro-serde", confluent_version)
 
     // Test
-    testImplementation(group = "io.ktor", name = "ktor-service-test-host", version = ktor_version)
-
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junit_version)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junit_version)
 }

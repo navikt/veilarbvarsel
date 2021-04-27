@@ -5,16 +5,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.domain.VarselType
 import no.nav.fo.veilarbvarsel.features.BackgroundJob
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.BrukerNotifikasjonBeskjedProducer
 import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
 import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.varsel.VarselSender
 import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
-import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.net.URL
 import java.util.*
 
 val logger = LoggerFactory.getLogger("Main")
@@ -39,6 +34,7 @@ fun Application.server() {
         job = VarselSender(service)
     }
 
+/*
     BrukerNotifikasjonBeskjedProducer.send(
         UUID.randomUUID().toString(),
         "10108003980",
@@ -58,6 +54,7 @@ fun Application.server() {
 
         }
     )
+*/
 
 //    while (true) {
 //        Thread.sleep(1000)
