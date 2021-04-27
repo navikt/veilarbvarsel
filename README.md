@@ -11,6 +11,94 @@
 
 ## Kafka
 
+## Meldingdesign
+
+### Veilarbaktivitet
+
+Varsler:
+- Når en aktivitet blir avtalt
+
+Aktiviteter:
+- SOEK_JOBB
+- MOETE_MED_NAV (Varsel når det er 24h igjen til møte)
+- SAMTALEREFERAT
+- JOBB_JEG_VIL_SOEKE
+- JOBB_JEG_HAR
+- JOBBRETTET_EGENAKTIVITET
+- MEDISINSK_BEHANDLING
+
+AktivitetStatus:
+- FORSLAG
+- PLANLEGGER
+- GJENNOMFOERER
+- FULLFOERT
+- AVBRUTT
+
+- Events:
+  - CREATE
+  - CREATED
+  - MODIFY
+  - MODIFIED
+  - ERROR
+  - ARCHIVED
+
+```json
+{
+  "transactionId": "45fa0953-c906-405c-9dc6-81196d66ce5a",
+  "timestamp": "",
+  "type": "AKTIVITET",
+  "event": "MODIFIED",
+  "oppfolgingsPeriodeId": "ec7b3d53-1041-4ded-8442-4fa7ffaccbad",
+  "subject": {
+    "type": "BRUKER",
+    "norskIdent": "01011074635",
+    "aktoerId": "fd"
+  },
+  "actor": {
+    "type": "BRUKER",
+    //VEILEDER, BRUKER, SYSTEM
+    "id": "01011074635",
+    "aktoerId": "fd"
+  },
+  "data": {
+    "aktivitetId": "ae0f07f4-959b-4497-b002-6a3cf6f615f7",
+    "type": "MOETE_MED_NAV",
+    "oldState": {
+      "title": "",
+      "description": "",
+      "avtalt": false,
+      "forhaandsorientering": {
+        "type": "SEND", //IKKE_SEND
+        "text": "",
+        "lestTidspunkt": ""
+      },
+      "status": "PLANLEGGER",
+      "fraTidspunkt": "",
+      "tilTidspunkt": "",
+      "kontorsperretEnhet": "",
+      "opprettetDate": "",
+      "endretDate": "",
+      "archivedDate": "",
+      "subtypeData": {
+        "tidspunkt": "01.01.2021 00:00",
+        "motested": "",
+        "moteform": ""
+      }
+    },
+    "newState": {
+      "title": "",
+      "avtalt": true,
+      "status": "GJENNOMFOERER",
+      "tidspunkt": "02.01.2021 02:00"
+    }
+  }
+}
+```
+
+### Veilarbdialog
+
+---
+
 ### Messages
 #### Consumes
 - sendVarsel
