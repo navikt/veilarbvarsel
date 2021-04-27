@@ -28,6 +28,7 @@ val jackson_version = "2.12.3"
 val junit_version = "5.6.0"
 
 val brukernotifikasjon_version = "1.2021.01.18-11.12-b9c8c40b98d1"
+val doknotifikasjonVersion = "1.2020.11.16-09.27-d037b30bb0ea"
 
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
@@ -59,6 +60,7 @@ dependencies {
     implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafka_version)
 
     implementation(group = "com.github.navikt", name = "brukernotifikasjon-schemas", version = brukernotifikasjon_version)
+    implementation("com.github.navikt", "doknotifikasjon-schemas", doknotifikasjonVersion)
     implementation("org.apache.avro", "avro", avro_version)
     implementation("io.confluent", "kafka-streams-avro-serde", confluent_version)
 

@@ -11,6 +11,7 @@ import no.nav.fo.veilarbvarsel.exceptions.VarselError
 import no.nav.fo.veilarbvarsel.features.ClosableJob
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
@@ -19,22 +20,22 @@ import java.util.*
 
 class KafkaInternalConsumer(val service: VarselService): ClosableJob {
 
-    val props = Properties()
-    val topic = System.getenv("KAFKA_INTERNAL_TOPIC")?: "TEST_INTERNAL_TOPIC"
+    private val properties = Properties()
+    private val topic = System.getenv("KAFKA_INTERNAL_TOPIC")?: "TEST_INTERNAL_TOPIC"
 
-    var shutdown = false
-    var running = false
+    private var shutdown = false
+    private var running = false
 
-    val logger = LoggerFactory.getLogger(this.javaClass)
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     init {
         val host = System.getenv("KAFKA_HOST") ?: "localhost"
         val port = System.getenv("KAFKA_PORT") ?: 29092
 
-        props["bootstrap.servers"] = "$host:$port"
-        props["group.id"] = System.getenv("SERVICE_NAME") ?: "VARSEL_SERVICE"
-        props["key.deserializer"] = StringDeserializer::class.java
-        props["value.deserializer"] = StringDeserializer::class.java
+        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = "$host:$port"
+        properties["group.id"] = System.getenv("SERVICE_NAME") ?: "VARSEL_SERVICE"
+        properties["key.deserializer"] = StringDeserializer::class.java
+        properties["value.deserializer"] = StringDeserializer::class.java
     }
 
     override fun run() {
@@ -48,7 +49,7 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
         })
 
 
-        val consumer = KafkaConsumer<String, String>(props).apply {
+        val consumer = KafkaConsumer<String, String>(properties).apply {
             subscribe(listOf(topic))
         }
 

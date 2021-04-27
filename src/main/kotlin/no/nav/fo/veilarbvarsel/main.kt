@@ -5,7 +5,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.domain.VarselType
 import no.nav.fo.veilarbvarsel.features.BackgroundJob
-import no.nav.fo.veilarbvarsel.kafka.brukernotifikasjon.BrukerNotifikasjonBeskjedProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjon.BrukerNotifikasjonBeskjedProducer
 import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
 import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
 import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback

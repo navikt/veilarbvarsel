@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.kafka.brukernotifikasjon
+package no.nav.fo.veilarbvarsel.brukernotifikasjon
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.serializers.KafkaAvroSerializer
