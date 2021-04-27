@@ -29,7 +29,7 @@ class KafkaInternalConsumer(val service: VarselService): ClosableJob {
 
     init {
         val host = System.getenv("KAFKA_HOST") ?: "localhost"
-        val port = System.getenv("KAFKA_PORT") ?: 9092
+        val port = System.getenv("KAFKA_PORT") ?: 29092
 
         props["bootstrap.servers"] = "$host:$port"
         props["group.id"] = System.getenv("SERVICE_NAME") ?: "VARSEL_SERVICE"

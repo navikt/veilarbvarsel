@@ -25,7 +25,7 @@ object BrukerNotifikasjonBeskjedProducer {
 
     init {
         val host = System.getenv("KAFKA_HOST") ?: "localhost"
-        val port = System.getenv("KAFKA_PORT") ?: 9092
+        val port = System.getenv("KAFKA_PORT") ?: 29092
 
         val properties = Properties()
         properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = "$host:$port"
