@@ -23,6 +23,11 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Build Artifacts
+        run: gradle build
+      - name: Build and Push Docker images
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gradle build
-          ls build/libs
+          docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+          docker build -t ${IMAGE}:${IMAGE_TAG} .
+          docker push ${IMAGE}:${IMAGE_TAG}
