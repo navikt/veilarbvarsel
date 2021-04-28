@@ -1,0 +1,8 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: veilarbaktivitet
+  namespace: {{namespace}}
+  cluster: dev-fss
+  labels:
+    team: pto
