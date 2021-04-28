@@ -23,6 +23,6 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Build Artifacts
-        run: gradle |
-          build
+        run: |
+          gradle build
           ls build/libs
