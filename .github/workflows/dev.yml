@@ -31,3 +31,32 @@ jobs:
           docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
           docker build -t ${IMAGE}:${IMAGE_TAG} .
           docker push ${IMAGE}:${IMAGE_TAG}
+
+  deploy-dev:
+    name: Create dev release
+    needs: [test-build-push]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cheackout
+        uses: actions/checkout@v2
+      - name: Deploy application
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais-dev.yaml
+          VAR: version=${{ env.IMAGE_TAG }}, namespace=q1
+
+  release-dev:
+    name: Create dev release
+    needs: [deploy-dev]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        uses: actions/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: release/dev@${{ env.IMAGE_TAG }}
+          release_name: Release to dev
+          prerelease: true

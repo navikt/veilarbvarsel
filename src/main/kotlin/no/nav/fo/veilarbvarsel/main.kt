@@ -1,12 +1,14 @@
 package no.nav.fo.veilarbvarsel
 
 import io.ktor.application.*
+import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.domain.VarselType
 import no.nav.fo.veilarbvarsel.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
 import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
+import no.nav.fo.veilarbvarsel.system.systemRouter
 import no.nav.fo.veilarbvarsel.varsel.VarselSender
 import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
 import org.slf4j.LoggerFactory
@@ -21,7 +23,7 @@ fun main() {
 }
 
 fun Application.server() {
-    DB.connect()
+/*    DB.connect()
     DB.setupSchemas()
 
     val service = VarselServiceImpl()
@@ -32,6 +34,13 @@ fun Application.server() {
 
     install(BackgroundJob.BackgroundJobFeature("Varsel Sender")) {
         job = VarselSender(service)
+    }*/
+
+    routing {
+        trace {
+            application.log.debug(it.buildText())
+        }
+        systemRouter()
     }
 
 /*
@@ -76,6 +85,6 @@ fun sendVarsel() {
         "Dette er en melding",
         4,
         null,
-    null)
+        null)
 
 }
