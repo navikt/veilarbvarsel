@@ -7,6 +7,20 @@ plugins {
 group = "no.nav.fo.veilarbvarsel"
 version = "1.0-SNAPSHOT"
 
+val jar by tasks.getting(Jar::class) {
+    manifest {
+        attributes["Main-Class"] = "no.nav.fo.veilarbvarsel.MainKt"
+    }
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
+
+
 repositories {
     mavenCentral()
     jcenter()
