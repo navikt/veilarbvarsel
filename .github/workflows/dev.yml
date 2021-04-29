@@ -34,7 +34,7 @@ jobs:
           docker push ${IMAGE}:${IMAGE_TAG}
 
   deploy-dev:
-    name: Create dev release
+    name: Deploy Dev
     needs: [test-build-push]
     runs-on: ubuntu-latest
     steps:
@@ -49,12 +49,12 @@ jobs:
           VAR: version=${{ env.IMAGE_TAG }}, namespace=q1
 
   release-dev:
-    name: Create dev release
+    name: Release Dev
     needs: [deploy-dev]
     runs-on: ubuntu-latest
     steps:
       - name: Create release
-        uses: actions/create-release@v2
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
