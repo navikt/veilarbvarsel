@@ -2,48 +2,8 @@ kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
   name: veilarbvarsel
-  namespace: {{namespace}}
-  cluster: dev-fss
+  namespace: pto
   labels:
     team: pto
 spec:
   image: docker.pgk.github.com/navikt/veilarbvarsel/veilarbvarsel:{{version}}
-  ingresses:
-    - https://veilarbvarsel-{{namespace}}.nais.preprod.local
-    - https://app-{{namespace}}.adeo.no/veilarbvarsel
-    - https://app-{{namespace}}.dev.adeo.no/veilarbvarsel
-  port: 8080
-  prometheus:
-    enabled: false
-    path: veilarbvarsel/system/prometheus
-  liveness:
-    path: veilarbvarsel/system/isAlive
-    port: 8080
-    initialDelay: 60
-    timeout: 10
-  readiness:
-    path: veilarbvarsel/system/isReady
-    port: 8080
-    initialDelay: 60
-    timeout: 10
-  replicas:
-    min: 1
-    max: 2
-    cpuThresholdPercentage: 50
-  resources:
-    limits:
-      cpu: "2"
-      memory: 1024Mi
-    requests:
-      cpu: 200m
-      memory: 256Mi
-  envFrom:
-    - configmap: pto-config
-    - configmap: loginservice-idporten
-  vault:
-    enabled: false
-  webproxy: true
-  leaderElection: true
-  env:
-    - name: APP_ENVIRONMENT_NAME
-      value: {{namespace}}

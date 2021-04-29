@@ -14,7 +14,7 @@ jobs:
   test-build-push:
     name: Test, Build and Push
     runs-on: ubuntu-latest
-    steps:
+    steps:wd
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -37,7 +37,7 @@ jobs:
     needs: [test-build-push]
     runs-on: ubuntu-latest
     steps:
-      - name: Cheackout
+      - name: Checkout
         uses: actions/checkout@v2
       - name: Deploy application
         uses: nais/deploy/actions/deploy@v1
