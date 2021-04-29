@@ -16,7 +16,10 @@ val jar by tasks.getting(Jar::class) {
 
     dependsOn(configurations.runtimeClasspath)
     from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") }
+            .filter { !it.name.equals("LICENSE") }
+            .map { zipTree(it) }
     })
 }
 
