@@ -6,4 +6,4 @@ metadata:
   labels:
     team: pto
 spec:
-  image: docker.pgk.github.com/navikt/veilarbvarsel/veilarbvarsel:{{version}}
+  image: ghcr.io/navikt/veilarbvarsel/veilarbvarsel:{{version}}
