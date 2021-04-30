@@ -12,7 +12,7 @@ spec:
     enabled: true
     path: /metrics
   liveness:
-    path: /system/isAlice
+    path: /system/isAlive
     port: 8080
     initialDelay: 10
     timeout: 10
