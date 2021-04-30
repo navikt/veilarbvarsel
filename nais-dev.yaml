@@ -7,3 +7,21 @@ metadata:
     team: pto
 spec:
   image: ghcr.io/navikt/veilarbvarsel/veilarbvarsel:{{version}}
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /metrics
+  liveness:
+    path: /system/isAlice
+    port: 8080
+    initialDelay: 10
+    timeout: 10
+  readyness:
+    path: /system/isReady
+    port: 8080
+    initialDelay: 10
+    timeout: 10
+  replicas:
+    min: 1
+    max: 2
+    cpuThreasholdPercentage: 50

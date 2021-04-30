@@ -32,6 +32,7 @@ repositories {
 }
 
 val ktor_version = "1.5.0"
+val prometheusVersion = "1.6.6"
 val exposed_version = "0.17.13"
 val coroutines_version = "1.4.3"
 
@@ -59,6 +60,8 @@ dependencies {
     // KTor stuff
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation("io.ktor", "ktor-metrics-micrometer", ktor_version)
+    implementation("io.micrometer", "micrometer-registry-prometheus", prometheusVersion)
 
     // Database stuff
     implementation("org.postgresql:postgresql:$postgresql_version")

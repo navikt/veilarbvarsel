@@ -1,16 +1,19 @@
 package no.nav.fo.veilarbvarsel
 
 import io.ktor.application.*
+import io.ktor.metrics.micrometer.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.fo.veilarbvarsel.domain.VarselType
-import no.nav.fo.veilarbvarsel.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
-import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
 import no.nav.fo.veilarbvarsel.system.systemRouter
-import no.nav.fo.veilarbvarsel.varsel.VarselSender
-import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -23,6 +26,18 @@ fun main() {
 }
 
 fun Application.server() {
+    val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+
+    install(MicrometerMetrics) {
+        registry = appMicrometerRegistry
+
+        meterBinders = listOf(
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics()
+        )
+    }
+
 /*    DB.connect()
     DB.setupSchemas()
 
@@ -39,6 +54,9 @@ fun Application.server() {
     routing {
         trace {
             application.log.debug(it.buildText())
+        }
+        get("/metrics") {
+            call.respond(appMicrometerRegistry.scrape())
         }
         systemRouter()
     }
