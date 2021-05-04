@@ -35,7 +35,7 @@ val ktor_version = "1.5.0"
 val prometheusVersion = "1.6.6"
 val exposed_version = "0.17.13"
 val coroutines_version = "1.4.3"
-
+val navCommonVersion = "2.2021.02.23_11.33-7091f10a35ba"
 val postgresql_version = "42.2.18"
 val logback_version = "1.2.3"
 val kafka_version = "2.7.0"
@@ -60,6 +60,7 @@ dependencies {
     // KTor stuff
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation("io.ktor", "ktor-jackson", ktor_version)
     implementation("io.ktor", "ktor-metrics-micrometer", ktor_version)
     implementation("io.micrometer", "micrometer-registry-prometheus", prometheusVersion)
 
@@ -75,6 +76,7 @@ dependencies {
 
     // Misc
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("no.nav.common", "log", navCommonVersion)
 
     // Kafka
     implementation(group = "org.apache.kafka", name = "kafka_2.13", version = kafka_version)

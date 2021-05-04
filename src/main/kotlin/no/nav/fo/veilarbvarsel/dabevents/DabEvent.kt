@@ -1,6 +1,6 @@
-package no.nav.fo.veilarbvarsel.domain.events
+package no.nav.fo.veilarbvarsel.dabevents
 
-import no.nav.fo.veilarbvarsel.domain.VarselType
+import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
 import org.joda.time.LocalDateTime
 import java.util.*
 
@@ -11,10 +11,12 @@ enum class EventType {
     MODIFIED,
     CANCEL,
     CANCELED,
+    FINISH,
+    FINISHED,
     ERROR
 }
 
-data class InternalEvent(
+data class DabEvent(
     val transactionId: UUID,
     val timestamp: LocalDateTime,
     val type: String,
@@ -25,25 +27,19 @@ data class InternalEvent(
 sealed class Payload
 
 data class CreateVarselPayload(
-    val varselId: String,
+    val system: String,
+    val id: String,
     val varselType: VarselType,
     val fodselsnummer: String,
     val groupId: String,
     val message: String,
+    val link: String,
     val sikkerhetsnivaa: Int,
-    val visibleUntil: LocalDateTime?
+    val visibleUntil: LocalDateTime?,
+    val externalVarsling: Boolean
 ) : Payload()
 
 data class VarselCreatedPayload(
-    val varselId: String,
-    val varselType: VarselType,
-    val fodselsnummer: String,
-    val groupId: String,
-    val message: String,
-    val sikkerhetsnivaa: Int,
-    val visibleUntil: LocalDateTime?
-) : Payload()
-
-data class CancelVarselPayload(
-    val varselId: String
+    val system: String,
+    val id: String
 ) : Payload()

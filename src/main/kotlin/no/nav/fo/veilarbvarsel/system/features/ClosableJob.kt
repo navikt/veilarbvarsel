@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.features
+package no.nav.fo.veilarbvarsel.system.features
 
 import java.io.Closeable
 

@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.features
+package no.nav.fo.veilarbvarsel.system.features
 
 import io.ktor.application.*
 import io.ktor.util.*
