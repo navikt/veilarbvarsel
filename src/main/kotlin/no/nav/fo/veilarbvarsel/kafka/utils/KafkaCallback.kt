@@ -5,7 +5,5 @@ import java.lang.Exception
 interface KafkaCallback {
     fun onSuccess()
 
-    fun onFailure(exception: Exception) {
-        // Implemented base version as onFailure is not always needed.
-    }
+    fun onFailure(exception: Exception)
 }

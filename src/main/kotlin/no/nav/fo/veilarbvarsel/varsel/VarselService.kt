@@ -6,16 +6,19 @@ import no.nav.fo.veilarbvarsel.dabevents.*
 import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
 import org.joda.time.LocalDateTime
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.lang.Exception
 import java.net.URL
 import java.util.*
 
 class VarselService(
-        private val dabEventProducer: DabEventProducer,
-        private val brukernotifikasjon: BrukernotifikasjonService,
-        private val metrics: PrometheusMeterRegistry
+    private val dabEventProducer: DabEventProducer,
+    private val brukernotifikasjon: BrukernotifikasjonService,
+    private val metrics: PrometheusMeterRegistry
 ) {
+
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
+
 
     fun create(transactionId: UUID, event: CreateVarselPayload) {
         when (event.varselType) {
@@ -25,60 +28,81 @@ class VarselService(
     }
 
     fun created(transactionId: UUID, system: String, id: String) {
-        dabEventProducer.send(DabEvent(
+        dabEventProducer.send(
+            DabEvent(
                 transactionId,
                 LocalDateTime.now(),
                 "VARSEL",
                 EventType.CREATED,
                 VarselCreatedPayload(
-                        system,
-                        id
+                    system,
+                    id
                 )
-        ))
+            )
+        )
+    }
+
+    fun done(transactionId: UUID, system: String, id: String, fodselsnummer: String, groupId: String) {
+        brukernotifikasjon.sendDone(
+            createId(system, id),
+            fodselsnummer,
+            groupId,
+            defaultCallback(
+                transactionId,
+                "Successfully sent Done from system ${system} with id ${id} to Brukernotifikasjon",
+                "Failed to send Done from system ${system} with id ${id} to Brukernotifikasjon",
+            )
+        )
     }
 
     private fun sendBeskjed(transactionId: UUID, event: CreateVarselPayload) {
         brukernotifikasjon.sendBeskjed(
-                "${event.system}:::${event.id}",
-                event.fodselsnummer,
-                event.groupId,
-                event.message,
-                URL(event.link),
-                event.sikkerhetsnivaa,
-                event.visibleUntil,
-                object : KafkaCallback {
-                    override fun onSuccess() {
-           //             metrics.get("BESKJED_SENT").counter().increment()
-                        created(transactionId, event.system, event.id)
-                    }
-                    override fun onFailure(exception: Exception) {
-         //               metrics.get("BESKJED_SENDING_FAILED").counter().increment()
-                        super.onFailure(exception)
-                    }
-                }
+            createId(event.system, event.id),
+            event.fodselsnummer,
+            event.groupId,
+            event.message,
+            URL(event.link),
+            event.sikkerhetsnivaa,
+            event.visibleUntil,
+            defaultCallback(
+                transactionId,
+                "Successfully sent Beskjed from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+                "Failed to send Beskjed from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+            )
         )
     }
 
     private fun sendOppgave(transactionId: UUID, event: CreateVarselPayload) {
         brukernotifikasjon.sendOppgave(
-                "${event.system}:::${event.id}",
-                event.fodselsnummer,
-                event.groupId,
-                event.message,
-                URL(event.link),
-                event.sikkerhetsnivaa,
-                object : KafkaCallback {
-                    override fun onSuccess() {
-             //           metrics.get("OPPGAVE_SENT").counter().increment()
-                        created(transactionId, event.system, event.id)
-                    }
-                    override fun onFailure(exception: Exception) {
-               //         metrics.get("OPPGAVE_SENDING_FAILED").counter().increment()
-                        super.onFailure(exception)
-                    }
-                }
-
+            createId(event.system, event.id),
+            event.fodselsnummer,
+            event.groupId,
+            event.message,
+            URL(event.link),
+            event.sikkerhetsnivaa,
+            defaultCallback(
+                transactionId,
+                "Successfully sent Oppgave from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+                "Failed to send Oppgave from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+            )
         )
+    }
+
+    private fun createId(system: String, id: String): String {
+        return "$system:::$id";
+    }
+
+    private fun defaultCallback(transactionId: UUID, successString: String, exceptionString: String): KafkaCallback {
+        return object : KafkaCallback {
+            override fun onSuccess() {
+                logger.info("[Transaction: $transactionId]: $successString")
+            }
+
+            override fun onFailure(exception: Exception) {
+                logger.error("[Transaction: $transactionId]: $exceptionString", exception)
+            }
+
+        }
     }
 
 

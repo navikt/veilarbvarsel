@@ -24,17 +24,23 @@ class DabEventConsumer(
     override fun handle(data: String) {
         val handlableEvent = toDabEvent(data)
 
-        if(handlableEvent.isPresent) {
+        if (handlableEvent.isPresent) {
             val event = handlableEvent.get()
             logger.info("[${event.transactionId}] [${event.event}]: ${event.payload}")
 
             when (event.payload) {
-                is CreateVarselPayload -> {
-                    service.create(event.transactionId, event.payload)
-                }
-                is VarselCreatedPayload -> {
-                    logger.info("Handling Varsel Created event $event")
-                }
+                is CreateVarselPayload -> service.create(
+                    transactionId = event.transactionId,
+                    event = event.payload
+                )
+                is DonePayload -> service.done(
+                    transactionId = event.transactionId,
+                    system = event.payload.system,
+                    id = event.payload.id,
+                    fodselsnummer = event.payload.fodselsnummer,
+                    groupId = event.payload.groupId
+                )
+                is VarselCreatedPayload -> logger.info("Handling Varsel Created event $event")
             }
 
         }
@@ -58,6 +64,7 @@ class DabEventConsumer(
             payload = when (event) {
                 EventType.CREATE -> objectMapper.treeToValue(jsonStruct["payload"], CreateVarselPayload::class.java)
                 EventType.CREATED -> objectMapper.treeToValue(jsonStruct["payload"], VarselCreatedPayload::class.java)
+                EventType.DONE -> objectMapper.treeToValue(jsonStruct["payload"], DonePayload::class.java)
                 else -> null
             }
         }

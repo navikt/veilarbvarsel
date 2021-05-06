@@ -7,12 +7,7 @@ import java.util.*
 enum class EventType {
     CREATE,
     CREATED,
-    MODIFY,
-    MODIFIED,
-    CANCEL,
-    CANCELED,
-    FINISH,
-    FINISHED,
+    DONE,
     ERROR
 }
 
@@ -42,4 +37,11 @@ data class CreateVarselPayload(
 data class VarselCreatedPayload(
     val system: String,
     val id: String
+) : Payload()
+
+data class DonePayload(
+    val system: String,
+    val id: String,
+    val fodselsnummer: String,
+    val groupId: String
 ) : Payload()

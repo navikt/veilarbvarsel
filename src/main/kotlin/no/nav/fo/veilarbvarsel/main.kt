@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.config
+package no.nav.fo.veilarbvarsel
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
@@ -15,6 +15,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import no.nav.fo.veilarbvarsel.config.ApplicationContext
 import no.nav.fo.veilarbvarsel.system.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.system.healthApi
 import no.nav.fo.veilarbvarsel.varsel.varselApi
@@ -30,13 +31,13 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         registry = appContext.metrics
 
         meterBinders = listOf(
-                ClassLoaderMetrics(),
-                JvmMemoryMetrics(),
-                JvmGcMetrics(),
-                ProcessorMetrics(),
-                JvmThreadMetrics(),
-                FileDescriptorMetrics(),
-                UptimeMetrics(),
+            ClassLoaderMetrics(),
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics(),
+            JvmThreadMetrics(),
+            FileDescriptorMetrics(),
+            UptimeMetrics(),
         )
     }
 
