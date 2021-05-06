@@ -8,6 +8,7 @@ import no.nav.fo.veilarbvarsel.varsel.domain.Done
 import no.nav.fo.veilarbvarsel.varsel.domain.DoneDto
 import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
 import no.nav.fo.veilarbvarsel.varsel.domain.VarselDto
+import java.net.URL
 
 fun Route.varselApi(service: DabEventService) {
     route("/varsel") {
@@ -31,7 +32,7 @@ private fun VarselDto.asVarsel(): Varsel {
         type,
         fodselsnummer,
         groupId,
-        link,
+        URL(link),
         message,
         sikkerhetsnivaa,
         visibleUntil,

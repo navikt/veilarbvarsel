@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 class KafkaProducerWrapper<K, V>(
-        properties: Properties,
-        private val topic: String
+    properties: Properties,
+    private val topic: String
 ) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -22,7 +22,7 @@ class KafkaProducerWrapper<K, V>(
                     callback?.onSuccess()
                 } else {
                     callback?.onFailure(exception)
-                            ?: throw InternalError("Could not send message", exception)
+                        ?: throw InternalError("Could not send message", exception)
                 }
             }
         }

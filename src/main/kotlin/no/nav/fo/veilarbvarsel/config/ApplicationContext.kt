@@ -13,7 +13,6 @@ import no.nav.fo.veilarbvarsel.varsel.VarselService
 
 class ApplicationContext {
     val environment = Environment()
-    //val database = PostgresDatabase(environment.database)
 
     val metrics = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 

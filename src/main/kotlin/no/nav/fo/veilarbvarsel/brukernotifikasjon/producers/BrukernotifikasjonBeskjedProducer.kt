@@ -7,64 +7,37 @@ import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
 import no.nav.fo.veilarbvarsel.kafka.KafkaProducerWrapper
 import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.kafka.utils.props.KafkaAvroProducerProperties
-import org.joda.time.LocalDateTime
-import java.net.URL
+import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
 
 class BrukernotifikasjonBeskjedProducer(
-        env: KafkaEnvironment,
-        private val systemUser: String,
-        topic: String
+    env: KafkaEnvironment,
+    private val systemUser: String,
+    topic: String
 ) {
 
     private val producer: KafkaProducerWrapper<Nokkel, Beskjed> = KafkaProducerWrapper(
-            KafkaAvroProducerProperties(env).getProperties(),
-            topic
+        KafkaAvroProducerProperties(env).getProperties(),
+        topic
     )
 
-    fun send(
-            id: String,
-            fodselsnummer: String,
-            groupId: String,
-            message: String,
-            link: URL,
-            sikkerhetsnivaa: Int,
-            visibleUntil: LocalDateTime?,
-            callback: KafkaCallback?
-    ) {
-        val nokkel = Nokkel(systemUser, id)
-        val beskjed = createBeskjed(id, fodselsnummer, groupId, message, link, sikkerhetsnivaa, visibleUntil)
+    fun send(varsel: Varsel, callback: KafkaCallback?) {
+        val nokkel = Nokkel(systemUser, varsel.getSystemId())
+        val beskjed = createBeskjed(varsel)
 
         producer.send(nokkel, beskjed, callback)
     }
 
-    private fun createBeskjed(
-            varselId: String,
-            fodselsnummer: String,
-            groupId: String,
-            message: String,
-            link: URL,
-            sikkerhetsnivaa: Int,
-            visibleUntil: LocalDateTime?,
-    ): Beskjed {
+    private fun createBeskjed(varsel: Varsel): Beskjed {
         val builder = BeskjedBuilder()
-                .withTidspunkt(java.time.LocalDateTime.now())
-                .withFodselsnummer(fodselsnummer)
-                .withGrupperingsId(groupId)
-                .withTekst(message)
-                .withLink(link)
-                .withSikkerhetsnivaa(sikkerhetsnivaa)
+            .withTidspunkt(java.time.LocalDateTime.now())
+            .withFodselsnummer(varsel.fodselsnummer)
+            .withGrupperingsId(varsel.groupId)
+            .withTekst(varsel.message)
+            .withLink(varsel.link)
+            .withSikkerhetsnivaa(varsel.sikkerhetsnivaa)
 
-        if (visibleUntil != null) {
-            builder.withSynligFremTil(
-                    java.time.LocalDateTime.of(
-                            visibleUntil.year,
-                            visibleUntil.monthOfYear,
-                            visibleUntil.dayOfMonth,
-                            visibleUntil.hourOfDay,
-                            visibleUntil.minuteOfHour,
-                            visibleUntil.secondOfMinute
-                    )
-            )
+        if (varsel.visibleUntil != null) {
+            builder.withSynligFremTil(varsel.visibleUntil)
         }
 
         return builder.build()

@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbvarsel.varsel.domain
 
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
+
 
 /**
  * Compbination of system+id has to be unique

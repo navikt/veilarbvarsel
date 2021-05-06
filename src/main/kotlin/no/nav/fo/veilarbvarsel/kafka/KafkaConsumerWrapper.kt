@@ -13,7 +13,7 @@ abstract class KafkaConsumerWrapper<K, V>(
     env: KafkaEnvironment,
     systemUser: String,
     private val topics: List<String>
-): ClosableJob {
+) : ClosableJob {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private val props = Properties()

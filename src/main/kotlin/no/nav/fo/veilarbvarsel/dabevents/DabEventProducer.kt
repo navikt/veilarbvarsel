@@ -10,8 +10,8 @@ import java.io.Closeable
 import java.util.*
 
 class DabEventProducer(
-        private val env: KafkaEnvironment,
-        topic: String
+    private val env: KafkaEnvironment,
+    topic: String
 ) : Closeable {
 
     private val producer: KafkaProducerWrapper<String, DabEvent> = KafkaProducerWrapper(getProperties(), topic)

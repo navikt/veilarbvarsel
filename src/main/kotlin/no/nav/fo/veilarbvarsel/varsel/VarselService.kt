@@ -2,10 +2,11 @@ package no.nav.fo.veilarbvarsel.varsel
 
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.fo.veilarbvarsel.brukernotifikasjon.BrukernotifikasjonService
-import no.nav.fo.veilarbvarsel.dabevents.*
+import no.nav.fo.veilarbvarsel.dabevents.CreateVarselPayload
+import no.nav.fo.veilarbvarsel.dabevents.DabEventProducer
 import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
+import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
 import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
-import org.joda.time.LocalDateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -27,21 +28,6 @@ class VarselService(
         }
     }
 
-    fun created(transactionId: UUID, system: String, id: String) {
-        dabEventProducer.send(
-            DabEvent(
-                transactionId,
-                LocalDateTime.now(),
-                "VARSEL",
-                EventType.CREATED,
-                VarselCreatedPayload(
-                    system,
-                    id
-                )
-            )
-        )
-    }
-
     fun done(transactionId: UUID, system: String, id: String, fodselsnummer: String, groupId: String) {
         brukernotifikasjon.sendDone(
             createId(system, id),
@@ -57,13 +43,7 @@ class VarselService(
 
     private fun sendBeskjed(transactionId: UUID, event: CreateVarselPayload) {
         brukernotifikasjon.sendBeskjed(
-            createId(event.system, event.id),
-            event.fodselsnummer,
-            event.groupId,
-            event.message,
-            URL(event.link),
-            event.sikkerhetsnivaa,
-            event.visibleUntil,
+            event.toVarsel(),
             defaultCallback(
                 transactionId,
                 "Successfully sent Beskjed from system ${event.system} with id ${event.id} to Brukernotifikasjon",
@@ -74,12 +54,7 @@ class VarselService(
 
     private fun sendOppgave(transactionId: UUID, event: CreateVarselPayload) {
         brukernotifikasjon.sendOppgave(
-            createId(event.system, event.id),
-            event.fodselsnummer,
-            event.groupId,
-            event.message,
-            URL(event.link),
-            event.sikkerhetsnivaa,
+            event.toVarsel(),
             defaultCallback(
                 transactionId,
                 "Successfully sent Oppgave from system ${event.system} with id ${event.id} to Brukernotifikasjon",
@@ -89,7 +64,7 @@ class VarselService(
     }
 
     private fun createId(system: String, id: String): String {
-        return "$system:::$id";
+        return "$system:::$id"
     }
 
     private fun defaultCallback(transactionId: UUID, successString: String, exceptionString: String): KafkaCallback {
@@ -103,6 +78,21 @@ class VarselService(
             }
 
         }
+    }
+
+    private fun CreateVarselPayload.toVarsel(): Varsel {
+        return Varsel(
+            system,
+            id,
+            varselType,
+            fodselsnummer,
+            groupId,
+            URL(link),
+            message,
+            sikkerhetsnivaa,
+            visibleUntil,
+            externalVarsling
+        )
     }
 
 

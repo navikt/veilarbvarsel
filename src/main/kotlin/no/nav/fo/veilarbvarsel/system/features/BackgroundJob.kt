@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import java.io.Closeable
 import kotlin.concurrent.thread
 
-class BackgroundJob(val name: String, configuration: JobConfiguration): Closeable {
+class BackgroundJob(val name: String, configuration: JobConfiguration) : Closeable {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -16,7 +16,7 @@ class BackgroundJob(val name: String, configuration: JobConfiguration): Closeabl
         var job: ClosableJob? = null
     }
 
-    class BackgroundJobFeature(val name: String): ApplicationFeature<Application, JobConfiguration, BackgroundJob> {
+    class BackgroundJobFeature(val name: String) : ApplicationFeature<Application, JobConfiguration, BackgroundJob> {
         override val key: AttributeKey<BackgroundJob> = AttributeKey("BackgroundJob-$name")
 
         override fun install(pipeline: Application, configure: JobConfiguration.() -> Unit): BackgroundJob {

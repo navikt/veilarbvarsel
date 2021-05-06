@@ -2,7 +2,7 @@ package no.nav.fo.veilarbvarsel.dabevents
 
 import no.nav.fo.veilarbvarsel.varsel.domain.Done
 import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import java.util.*
 
 class DabEventService(private val eventProducer: DabEventProducer) {
@@ -21,7 +21,7 @@ class DabEventService(private val eventProducer: DabEventProducer) {
                     varsel.fodselsnummer,
                     varsel.groupId,
                     varsel.message,
-                    varsel.link,
+                    varsel.link.toString(),
                     varsel.sikkerhetsnivaa,
                     varsel.visibleUntil,
                     varsel.externalVarsling

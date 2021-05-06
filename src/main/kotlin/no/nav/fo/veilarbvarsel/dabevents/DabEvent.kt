@@ -1,7 +1,7 @@
 package no.nav.fo.veilarbvarsel.dabevents
 
 import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import java.util.*
 
 enum class EventType {

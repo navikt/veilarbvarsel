@@ -1,6 +1,7 @@
 package no.nav.fo.veilarbvarsel.varsel.domain
 
-import org.joda.time.LocalDateTime
+import java.net.URL
+import java.time.LocalDateTime
 
 enum class VarselType {
     BESKJED,
@@ -13,9 +14,15 @@ data class Varsel(
     val type: VarselType,
     val fodselsnummer: String,
     val groupId: String,
-    val link: String,
+    val link: URL,
     val message: String,
     val sikkerhetsnivaa: Int,
     val visibleUntil: LocalDateTime?,
     val externalVarsling: Boolean,
-)
+) {
+
+    fun getSystemId(): String {
+        return "$system:::$id"
+    }
+
+}

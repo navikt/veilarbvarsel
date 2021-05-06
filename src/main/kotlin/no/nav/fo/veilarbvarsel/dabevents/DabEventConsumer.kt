@@ -8,8 +8,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
 import no.nav.fo.veilarbvarsel.kafka.KafkaConsumerWrapper
 import no.nav.fo.veilarbvarsel.varsel.VarselService
-import org.joda.time.LocalDateTime
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
 import java.util.*
 
 class DabEventConsumer(
