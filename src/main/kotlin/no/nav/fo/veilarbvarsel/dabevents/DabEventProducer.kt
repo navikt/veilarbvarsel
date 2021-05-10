@@ -1,9 +1,9 @@
 package no.nav.fo.veilarbvarsel.dabevents
 
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
-import no.nav.fo.veilarbvarsel.kafka.KafkaProducerWrapper
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaJsonSerializer
+import no.nav.fo.veilarbvarsel.config.kafka.KafkaProducerWrapper
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaJsonSerializer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import java.io.Closeable

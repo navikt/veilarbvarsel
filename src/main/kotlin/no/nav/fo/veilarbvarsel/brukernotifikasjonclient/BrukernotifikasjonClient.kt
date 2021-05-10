@@ -1,12 +1,12 @@
-package no.nav.fo.veilarbvarsel.brukernotifikasjon
+package no.nav.fo.veilarbvarsel.brukernotifikasjonclient
 
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.producers.BrukernotifikasjonBeskjedProducer
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.producers.BrukernotifikasjonDoneProducer
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.producers.BrukernotifikasjonOppgaveProducer
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
-import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonBeskjedProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonDoneProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonOppgaveProducer
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
+import no.nav.fo.veilarbvarsel.varsel.Varsel
 
-class BrukernotifikasjonService(
+class BrukernotifikasjonClient(
     private val beskjedProducer: BrukernotifikasjonBeskjedProducer,
     private val oppgaveProducer: BrukernotifikasjonOppgaveProducer,
     private val doneProducer: BrukernotifikasjonDoneProducer

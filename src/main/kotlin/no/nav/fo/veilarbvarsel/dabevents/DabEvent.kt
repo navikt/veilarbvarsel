@@ -1,6 +1,6 @@
 package no.nav.fo.veilarbvarsel.dabevents
 
-import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
+import no.nav.fo.veilarbvarsel.varsel.VarselType
 import java.time.LocalDateTime
 import java.util.*
 

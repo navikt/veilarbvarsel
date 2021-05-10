@@ -1,13 +1,13 @@
-package no.nav.fo.veilarbvarsel.brukernotifikasjon.producers
+package no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers
 
 import no.nav.brukernotifikasjon.schemas.Nokkel
 import no.nav.brukernotifikasjon.schemas.Oppgave
 import no.nav.brukernotifikasjon.schemas.builders.OppgaveBuilder
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
-import no.nav.fo.veilarbvarsel.kafka.KafkaProducerWrapper
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
-import no.nav.fo.veilarbvarsel.kafka.utils.props.KafkaAvroProducerProperties
-import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
+import no.nav.fo.veilarbvarsel.config.kafka.KafkaProducerWrapper
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
+import no.nav.fo.veilarbvarsel.config.kafka.utils.props.KafkaAvroProducerProperties
+import no.nav.fo.veilarbvarsel.varsel.Varsel
 import java.time.LocalDateTime
 
 class BrukernotifikasjonOppgaveProducer(

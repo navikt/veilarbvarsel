@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.kafka.utils
+package no.nav.fo.veilarbvarsel.config.kafka.utils
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule

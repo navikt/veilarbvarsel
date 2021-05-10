@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
-import no.nav.fo.veilarbvarsel.kafka.KafkaConsumerWrapper
+import no.nav.fo.veilarbvarsel.config.kafka.KafkaConsumerWrapper
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime

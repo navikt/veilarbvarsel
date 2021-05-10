@@ -1,7 +1,7 @@
-package no.nav.fo.veilarbvarsel.kafka
+package no.nav.fo.veilarbvarsel.config.kafka
 
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
-import no.nav.fo.veilarbvarsel.system.features.ClosableJob
+import no.nav.fo.veilarbvarsel.config.system.features.ClosableJob
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer

@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.kafka.utils
+package no.nav.fo.veilarbvarsel.config.kafka.utils
 
 interface KafkaCallback {
     fun onSuccess()

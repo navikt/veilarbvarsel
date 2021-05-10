@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.system
+package no.nav.fo.veilarbvarsel.config.system
 
 import io.ktor.application.*
 import io.ktor.http.*

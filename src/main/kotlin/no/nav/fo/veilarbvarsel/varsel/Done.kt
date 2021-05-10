@@ -1,6 +1,6 @@
-package no.nav.fo.veilarbvarsel.varsel.domain
+package no.nav.fo.veilarbvarsel.varsel
 
-data class DoneDto(
+data class Done(
     val id: String,
     val system: String,
     val fodselsnummer: String,
