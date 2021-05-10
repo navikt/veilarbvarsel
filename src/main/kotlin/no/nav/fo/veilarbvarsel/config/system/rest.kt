@@ -11,7 +11,7 @@ import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import no.nav.fo.veilarbvarsel.config.ApplicationContext
-import no.nav.fo.veilarbvarsel.varsel.varselApi
+import no.nav.fo.veilarbvarsel.events.skal_slettes.varselApi
 
 
 fun Application.healthModule(appContext: ApplicationContext) {

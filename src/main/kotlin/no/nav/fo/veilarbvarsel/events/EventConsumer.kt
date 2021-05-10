@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.dabevents
+package no.nav.fo.veilarbvarsel.events
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.*
 
-class DabEventConsumer(
+class EventConsumer(
     env: KafkaEnvironment,
     systemUser: String,
     topics: List<String>,
@@ -22,7 +22,7 @@ class DabEventConsumer(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun handle(data: String) {
-        val handlableEvent = toDabEvent(data)
+        val handlableEvent = toEvent(data)
 
         if (handlableEvent.isPresent) {
             val event = handlableEvent.get()
@@ -46,7 +46,7 @@ class DabEventConsumer(
         }
     }
 
-    private fun toDabEvent(data: String): Optional<DabEvent> {
+    private fun toEvent(data: String): Optional<Event> {
         val objectMapper = jacksonObjectMapper().apply {
             registerModule(JavaTimeModule())
             registerModule(KotlinModule())
@@ -71,7 +71,7 @@ class DabEventConsumer(
 
         return if (payload != null) {
             Optional.of(
-                DabEvent(
+                Event(
                     UUID.fromString(jsonStruct["transactionId"].asText()),
                     LocalDateTime.parse(jsonStruct["timestamp"].textValue()),
                     type,

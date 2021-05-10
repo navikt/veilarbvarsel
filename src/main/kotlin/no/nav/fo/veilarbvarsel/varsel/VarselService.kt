@@ -2,8 +2,8 @@ package no.nav.fo.veilarbvarsel.varsel
 
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.BrukernotifikasjonClient
-import no.nav.fo.veilarbvarsel.dabevents.CreateVarselPayload
-import no.nav.fo.veilarbvarsel.dabevents.DabEventProducer
+import no.nav.fo.veilarbvarsel.events.CreateVarselPayload
+import no.nav.fo.veilarbvarsel.events.EventProducer
 import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ import java.net.URL
 import java.util.*
 
 class VarselService(
-    private val dabEventProducer: DabEventProducer,
+    private val eventProducer: EventProducer,
     private val brukernotifikasjon: BrukernotifikasjonClient,
     private val metrics: PrometheusMeterRegistry
 ) {

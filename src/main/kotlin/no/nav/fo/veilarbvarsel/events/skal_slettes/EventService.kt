@@ -1,15 +1,16 @@
-package no.nav.fo.veilarbvarsel.dabevents
+package no.nav.fo.veilarbvarsel.events.skal_slettes
 
+import no.nav.fo.veilarbvarsel.events.*
 import no.nav.fo.veilarbvarsel.varsel.Done
 import no.nav.fo.veilarbvarsel.varsel.Varsel
 import java.time.LocalDateTime
 import java.util.*
 
-class DabEventService(private val eventProducer: DabEventProducer) {
+class EventService(private val eventProducer: EventProducer) {
 
     fun createVarsel(varsel: Varsel) {
         eventProducer.send(
-            DabEvent(
+            Event(
                 UUID.randomUUID(),
                 LocalDateTime.now(),
                 "VARSEL",
@@ -32,7 +33,7 @@ class DabEventService(private val eventProducer: DabEventProducer) {
 
     fun createDone(done: Done) {
         eventProducer.send(
-            DabEvent(
+            Event(
                 UUID.randomUUID(),
                 LocalDateTime.now(),
                 "VARSEL",

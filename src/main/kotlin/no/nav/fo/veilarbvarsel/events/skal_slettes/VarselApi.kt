@@ -1,11 +1,13 @@
-package no.nav.fo.veilarbvarsel.varsel
+package no.nav.fo.veilarbvarsel.events.skal_slettes
 
 import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.routing.*
-import no.nav.fo.veilarbvarsel.dabevents.DabEventService
+import no.nav.fo.veilarbvarsel.varsel.Done
+import no.nav.fo.veilarbvarsel.varsel.Varsel
 
-fun Route.varselApi(service: DabEventService) {
+//TODO slett meg når alt virker
+fun Route.varselApi(service: EventService) {
     route("/varsel") {
 
         post("/create") {

@@ -25,8 +25,8 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         }
     }
 
-    install(BackgroundJob.BackgroundJobFeature("DAB Events Consumer")) {
-        job = appContext.dabEventConsumer
+    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
+        job = appContext.eventConsumer
     }
 
     configureShutdownHook(appContext)
@@ -34,7 +34,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
 private fun Application.configureShutdownHook(appContext: ApplicationContext) {
     environment.monitor.subscribe(ApplicationStopPreparing) {
-        appContext.dabEventConsumer.close()
-        appContext.dabEventProducer.close()
+        appContext.eventConsumer.close()
+        appContext.eventProducer.close()
     }
 }

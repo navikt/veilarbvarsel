@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.dabevents
+package no.nav.fo.veilarbvarsel.events
 
 import no.nav.fo.veilarbvarsel.varsel.VarselType
 import java.time.LocalDateTime
@@ -11,7 +11,7 @@ enum class EventType {
     ERROR
 }
 
-data class DabEvent(
+data class Event(
     val transactionId: UUID,
     val timestamp: LocalDateTime,
     val type: String,
