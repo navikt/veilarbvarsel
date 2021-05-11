@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.events
+package no.nav.fo.veilarbvarsel.varsel
 
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
 import no.nav.fo.veilarbvarsel.config.kafka.KafkaProducerWrapper
@@ -9,15 +9,15 @@ import org.apache.kafka.common.serialization.StringSerializer
 import java.io.Closeable
 import java.util.*
 
-class EventProducer(
+class VarselEventProducer(
     private val env: KafkaEnvironment,
     topic: String
 ) : Closeable {
 
-    private val producer: KafkaProducerWrapper<String, Event> = KafkaProducerWrapper(getProperties(), topic)
+    private val producer: KafkaProducerWrapper<String, VarselEvent> = KafkaProducerWrapper(getProperties(), topic)
 
-    fun send(event: Event, callback: KafkaCallback? = null) {
-        producer.send("VARSEL", event, callback)
+    fun send(varselEvent: VarselEvent, callback: KafkaCallback? = null) {
+        producer.send("VARSEL", varselEvent, callback)
     }
 
     override fun close() {

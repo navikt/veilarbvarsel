@@ -34,6 +34,6 @@ fun Application.healthModule(appContext: ApplicationContext) {
             application.log.debug(it.buildText())
         }
         healthApi(appContext.metrics)
-        varselApi(appContext.dabEventService)
+        varselApi(appContext.eventProducer)
     }
 }

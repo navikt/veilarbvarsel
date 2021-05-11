@@ -1,13 +1,13 @@
 package no.nav.fo.veilarbvarsel.config.kafka.utils
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.apache.kafka.common.serialization.Serializer
+import no.nav.fo.veilarbvarsel.varsel.VarselEvent
+import org.apache.kafka.common.serialization.Deserializer
 
-class KafkaJsonSerializer<V> : Serializer<V> {
+class KafkaEventDeserializer : Deserializer<VarselEvent> {
 
     private val objectMapper = jacksonObjectMapper().apply {
         registerModule(JavaTimeModule())
@@ -15,7 +15,7 @@ class KafkaJsonSerializer<V> : Serializer<V> {
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
 
-    override fun serialize(string: String, data: V): ByteArray {
-        return objectMapper.writeValueAsBytes(data)
+    override fun deserialize(topic: String?, data: ByteArray): VarselEvent {
+        return objectMapper.readValue(data, VarselEvent::class.java)
     }
 }

@@ -6,9 +6,8 @@ import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.BrukernotifikasjonClient
 import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonBeskjedProducer
 import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonDoneProducer
 import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonOppgaveProducer
-import no.nav.fo.veilarbvarsel.events.EventConsumer
-import no.nav.fo.veilarbvarsel.events.EventProducer
-import no.nav.fo.veilarbvarsel.events.skal_slettes.EventService
+import no.nav.fo.veilarbvarsel.varsel.VarselEventConsumer
+import no.nav.fo.veilarbvarsel.varsel.VarselEventProducer
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 
 class ApplicationContext {
@@ -16,7 +15,7 @@ class ApplicationContext {
 
     val metrics = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-    val eventProducer = EventProducer(
+    val eventProducer = VarselEventProducer(
         env = environment.kafka,
         topic = environment.kafkaTopics.dabEvents
     )
@@ -36,11 +35,10 @@ class ApplicationContext {
         topic = environment.kafkaTopics.doknotifikasjonDone
     )
 
-    val dabEventService = EventService(eventProducer)
-    val brukernotifikasjonService = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
-    val varselService = VarselService(eventProducer, brukernotifikasjonService, metrics)
+    val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+    val varselService = VarselService(brukernotifikasjonClient)
 
-    val eventConsumer = EventConsumer(
+    val eventConsumer = VarselEventConsumer(
         env = environment.kafka,
         systemUser = environment.systemUser,
         topics = listOf(environment.kafkaTopics.dabEvents),
