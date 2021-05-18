@@ -1,7 +1,8 @@
-package no.nav.fo.veilarbvarsel.kafka
+package no.nav.fo.veilarbvarsel.config.kafka
 
 import no.nav.fo.veilarbvarsel.config.KafkaEnvironment
-import no.nav.fo.veilarbvarsel.system.features.ClosableJob
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaEventDeserializer
+import no.nav.fo.veilarbvarsel.config.system.features.ClosableJob
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -13,7 +14,7 @@ abstract class KafkaConsumerWrapper<K, V>(
     env: KafkaEnvironment,
     systemUser: String,
     private val topics: List<String>
-): ClosableJob {
+) : ClosableJob {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private val props = Properties()
@@ -25,7 +26,7 @@ abstract class KafkaConsumerWrapper<K, V>(
         props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = env.bootstrapServers
         props["group.id"] = systemUser
         props["key.deserializer"] = StringDeserializer::class.java
-        props["value.deserializer"] = StringDeserializer::class.java
+        props["value.deserializer"] = KafkaEventDeserializer::class.java
     }
 
     abstract fun handle(data: V)

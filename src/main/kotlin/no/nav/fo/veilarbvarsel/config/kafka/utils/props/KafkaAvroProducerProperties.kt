@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.kafka.utils.props
+package no.nav.fo.veilarbvarsel.config.kafka.utils.props
 
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.serializers.KafkaAvroSerializer

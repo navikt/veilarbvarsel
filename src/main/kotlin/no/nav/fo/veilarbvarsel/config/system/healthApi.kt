@@ -1,12 +1,10 @@
-package no.nav.fo.veilarbvarsel.system
+package no.nav.fo.veilarbvarsel.config.system
 
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.exporter.common.TextFormat
 
 fun Route.healthApi(collectorRegistry: PrometheusMeterRegistry) {
 

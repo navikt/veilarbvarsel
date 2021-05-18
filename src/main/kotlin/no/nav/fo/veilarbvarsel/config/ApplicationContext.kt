@@ -2,34 +2,47 @@ package no.nav.fo.veilarbvarsel.config
 
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.BrukernotifikasjonService
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.producers.BrukernotifikasjonBeskjedProducer
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.producers.BrukernotifikasjonOppgaveProducer
-import no.nav.fo.veilarbvarsel.dabevents.DabEventConsumer
-import no.nav.fo.veilarbvarsel.dabevents.DabEventProducer
-import no.nav.fo.veilarbvarsel.dabevents.DabEventService
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.BrukernotifikasjonClient
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonBeskjedProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonDoneProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonOppgaveProducer
+import no.nav.fo.veilarbvarsel.varsel.VarselEventConsumer
+import no.nav.fo.veilarbvarsel.varsel.VarselEventProducer
 import no.nav.fo.veilarbvarsel.varsel.VarselService
 
 class ApplicationContext {
     val environment = Environment()
-    //val database = PostgresDatabase(environment.database)
 
     val metrics = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-    val dabEventProducer = DabEventProducer(environment.kafka, environment.kafkaTopics.dabEvents)
-    val beskjedProducer = BrukernotifikasjonBeskjedProducer(environment.kafka, environment.systemUser, environment.kafkaTopics.doknotifikasjonBeskjed)
-    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(environment.kafka, environment.systemUser, environment.kafkaTopics.doknotifikasjonOppgave)
-
-    val dabEventService = DabEventService(dabEventProducer)
-    val brukernotifikasjonService = BrukernotifikasjonService(beskjedProducer, oppgaveProducer)
-    val varselService = VarselService(dabEventProducer, brukernotifikasjonService, metrics)
-
-    val dabEventConsumer = DabEventConsumer(
-            env = environment.kafka,
-            systemUser = environment.systemUser,
-            topics = listOf(environment.kafkaTopics.dabEvents),
-            service = varselService
+    val eventProducer = VarselEventProducer(
+        env = environment.kafka,
+        topic = environment.kafkaTopics.varselKvitteringOutgoing
     )
+//    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonBeskjed
+//    )
+//    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonOppgave
+//    )
+//    val doneProducer = BrukernotifikasjonDoneProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonDone
+//    )
 
+//    val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+    val brukernotifikasjonClient = BrukernotifikasjonClient()
+    val varselService = VarselService(brukernotifikasjonClient)
 
+    val eventConsumer = VarselEventConsumer(
+        env = environment.kafka,
+        systemUser = environment.systemUser,
+        topics = listOf(environment.kafkaTopics.varselIncoming),
+        service = varselService
+    )
 }
