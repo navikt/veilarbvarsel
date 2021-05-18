@@ -17,31 +17,32 @@ class ApplicationContext {
 
     val eventProducer = VarselEventProducer(
         env = environment.kafka,
-        topic = environment.kafkaTopics.dabEvents
+        topic = environment.kafkaTopics.varselKvitteringOutgoing
     )
-    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonBeskjed
-    )
-    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonOppgave
-    )
-    val doneProducer = BrukernotifikasjonDoneProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonDone
-    )
+//    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonBeskjed
+//    )
+//    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonOppgave
+//    )
+//    val doneProducer = BrukernotifikasjonDoneProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonDone
+//    )
 
-    val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+//    val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+    val brukernotifikasjonClient = BrukernotifikasjonClient()
     val varselService = VarselService(brukernotifikasjonClient)
 
     val eventConsumer = VarselEventConsumer(
         env = environment.kafka,
         systemUser = environment.systemUser,
-        topics = listOf(environment.kafkaTopics.dabEvents),
+        topics = listOf(environment.kafkaTopics.varselIncoming),
         service = varselService
     )
 }
