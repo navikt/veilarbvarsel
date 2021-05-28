@@ -1,27 +1,29 @@
 package no.nav.fo.veilarbvarsel.brukernotifikasjonclient
 
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonBeskjedProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonDoneProducer
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.producers.BrukernotifikasjonOppgaveProducer
 import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
 import no.nav.fo.veilarbvarsel.varsel.Varsel
-import org.slf4j.LoggerFactory
 
-class BrukernotifikasjonClient() {
-
-    val logger = LoggerFactory.getLogger(javaClass)
+class BrukernotifikasjonClient(
+    private val beskjedProducer: BrukernotifikasjonBeskjedProducer,
+    private val oppgaveProducer: BrukernotifikasjonOppgaveProducer,
+    private val doneProducer: BrukernotifikasjonDoneProducer
+) {
 
     fun sendBeskjed(
         varsel: Varsel,
         callback: KafkaCallback
     ) {
-        logger.info("Sending Beskjed: $varsel")
-//        beskjedProducer.send(varsel, callback)
+        beskjedProducer.send(varsel, callback)
     }
 
     fun sendOppgave(
         varsel: Varsel,
         callback: KafkaCallback
     ) {
-        logger.info("Sending Oppgave: $varsel")
-//        oppgaveProducer.send(varsel, callback)
+        oppgaveProducer.send(varsel, callback)
     }
 
     fun sendDone(
@@ -30,7 +32,6 @@ class BrukernotifikasjonClient() {
         groupId: String,
         callback: KafkaCallback
     ) {
-        logger.info("Sending Done: $id, $fodselsnummer, $groupId")
-//        doneProducer.send(id, fodselsnummer, groupId, callback)
+        doneProducer.send(id, fodselsnummer, groupId, callback)
     }
 }
