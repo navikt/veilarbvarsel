@@ -1,6 +1,9 @@
 name: run-tests
 on:
   push:
+    branches-ignore:
+      - main
+      - dev
 
 jobs:
   test:

@@ -1,169 +1,92 @@
 package no.nav.fo.veilarbvarsel.varsel
 
-import no.nav.fo.veilarbvarsel.domain.Varsel
-import no.nav.fo.veilarbvarsel.domain.VarselDAO
-import no.nav.fo.veilarbvarsel.exceptions.VarselCancelationError
-import no.nav.fo.veilarbvarsel.exceptions.VarselCreationError
-import no.nav.fo.veilarbvarsel.exceptions.VarselInternalServerError
-import no.nav.fo.veilarbvarsel.domain.VarselDAO.asVarsel
-import no.nav.fo.veilarbvarsel.domain.VarselDAO.status
-import no.nav.fo.veilarbvarsel.domain.VarselStatus
-import no.nav.fo.veilarbvarsel.domain.VarselType
-import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.LocalDateTime
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.BrukernotifikasjonClient
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.URL
 import java.util.*
-import java.util.stream.Collectors
 
-interface VarselService {
-    fun add(
-        transactionId: UUID,
-        varselId: String,
-        type: VarselType,
-        fodselsnummer: String,
-        groupId: String,
-        message: String,
-        sikkerhetsnivaa: Int,
-        visibleUntil: LocalDateTime?
-    )
+class VarselService(
+    private val brukernotifikasjon: BrukernotifikasjonClient
+) {
 
-    fun cancel(varselId: String)
-    fun sending(varselId: String)
-    fun sent(varselId: String)
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getVarsel(varselId: String): Varsel?
-    fun getAllNotSendingOrCanceled(olderThan: LocalDateTime): Set<Varsel>
-    fun getAll(): Set<Varsel>
-}
 
-class VarselServiceImpl : VarselService {
-    private val logger = LoggerFactory.getLogger(this.javaClass)
-
-    override fun add(
-        transactionId: UUID,
-        varselId: String,
-        type: VarselType,
-        fodselsnummer: String,
-        groupId: String,
-        message: String,
-        sikkerhetsnivaa: Int,
-        visibleUntil: LocalDateTime?
-    ) {
-
-        if (getVarsel(varselId) != null) {
-            throw VarselCreationError(400, "Varsel with id $varselId already exist.")
-        }
-
-        transaction {
-            VarselDAO.insert {
-                it[VarselDAO.varselId] = varselId
-                it[VarselDAO.type] = type.name
-                it[VarselDAO.fodselsnummer] = fodselsnummer
-                it[VarselDAO.groupId] = groupId
-                it[VarselDAO.message] = message
-                it[VarselDAO.sikkerhetsnivaa] = sikkerhetsnivaa
-                it[VarselDAO.visibleUntil] = visibleUntil?.toDateTime()
-                it[status] = VarselStatus.RECEIVED.name
-                it[received] = LocalDateTime.now().toDateTime()
-            }
+    fun create(transactionId: UUID, event: CreateVarselVarselEvent) {
+        when (event.type) {
+            VarselType.BESKJED -> sendBeskjed(transactionId, event)
+            VarselType.OPPGAVE -> sendOppgave(transactionId, event)
         }
     }
 
-    override fun cancel(varselId: String) {
-        val varsel = getVarsel(varselId) ?: throw VarselCancelationError(
-            400,
-            "Cannot cancel varsel with id $varselId as it does not exist"
+    fun done(transactionId: UUID, system: String, id: String, fodselsnummer: String, groupId: String) {
+        brukernotifikasjon.sendDone(
+            createId(system, id),
+            fodselsnummer,
+            groupId,
+            defaultCallback(
+                transactionId,
+                "Successfully sent Done from system ${system} with id ${id} to Brukernotifikasjon",
+                "Failed to send Done from system ${system} with id ${id} to Brukernotifikasjon",
+            )
         )
+    }
 
-        if (varsel.sending != null) throw VarselCancelationError(
-            400,
-            "Varsel with id $varselId is already sent and cannot be canceled"
+    private fun sendBeskjed(transactionId: UUID, event: CreateVarselVarselEvent) {
+        brukernotifikasjon.sendBeskjed(
+            event.toVarsel(),
+            defaultCallback(
+                transactionId,
+                "Successfully sent Beskjed from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+                "Failed to send Beskjed from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+            )
         )
-        if (varsel.sent != null) throw VarselCancelationError(
-            400,
-            "Varsel with id $varselId is already sent and cannot be canceled"
-        )
+    }
 
-        transaction {
-            VarselDAO.update({ VarselDAO.id eq varsel.id }) {
-                it[status] = VarselStatus.CANCELED.name
-                it[canceled] = LocalDateTime.now().toDateTime()
+    private fun sendOppgave(transactionId: UUID, event: CreateVarselVarselEvent) {
+        brukernotifikasjon.sendOppgave(
+            event.toVarsel(),
+            defaultCallback(
+                transactionId,
+                "Successfully sent Oppgave from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+                "Failed to send Oppgave from system ${event.system} with id ${event.id} to Brukernotifikasjon",
+            )
+        )
+    }
+
+    private fun createId(system: String, id: String): String {
+        return "$system:::$id"
+    }
+
+    private fun defaultCallback(transactionId: UUID, successString: String, exceptionString: String): KafkaCallback {
+        return object : KafkaCallback {
+            override fun onSuccess() {
+                logger.info("[Transaction: $transactionId]: $successString")
             }
 
-            // FIXME Add Canceled message
-        }
-    }
-
-    override fun sending(varselId: String) {
-        val varsel = getVarsel(varselId) ?: throw VarselInternalServerError(
-            500,
-            "Cannot set varsel with id $varselId to sending as it does not exist"
-        )
-
-        if (varsel.sending != null) throw VarselInternalServerError(500, "Varsel with id $varselId is already sending")
-        if (varsel.sent != null) throw VarselInternalServerError(500, "Varsel with id $varselId is already sent")
-        if (varsel.canceled != null) throw VarselInternalServerError(
-            500,
-            "Cannot set a canceled varsel to sending, varselId: $varselId"
-        )
-
-        transaction {
-            VarselDAO.update({ VarselDAO.id eq varsel.id }) {
-                it[status] = VarselStatus.SENDING.name
-                it[sending] = LocalDateTime.now().toDateTime()
-            }
-        }
-    }
-
-    override fun sent(varselId: String) {
-        val varsel = getVarsel(varselId) ?: throw VarselInternalServerError(
-            500,
-            "Cannot set varsel with id $varselId to sent as it does not exist"
-        )
-
-        if (varsel.sending == null) throw VarselInternalServerError(
-            500,
-            "Sending should be set before setting Sent on varsel with id $varselId"
-        )
-        if (varsel.sent != null) throw VarselInternalServerError(500, "Varsel with id $varselId is already sent")
-        if (varsel.canceled != null) throw VarselInternalServerError(
-            500,
-            "Cannot set a canceled varsel to sent, varselId: $varselId"
-        )
-
-        transaction {
-            VarselDAO.update({ VarselDAO.id eq varsel.id }) {
-                it[status] = VarselStatus.SENT.name
-                it[sent] = LocalDateTime.now().toDateTime()
+            override fun onFailure(exception: Exception) {
+                logger.error("[Transaction: $transactionId]: $exceptionString", exception)
             }
 
-            InternalEventProducer.varselCreated(null, varsel, null)
         }
     }
 
-    override fun getVarsel(varselId: String): Varsel? {
-        return transaction {
-            VarselDAO.select { VarselDAO.varselId eq varselId }
-                .toList()
-        }.firstOrNull()?.asVarsel()
+    private fun CreateVarselVarselEvent.toVarsel(): Varsel {
+        return Varsel(
+            system,
+            id,
+            type,
+            fodselsnummer,
+            groupId,
+            URL(link),
+            message,
+            sikkerhetsnivaa,
+            visibleUntil,
+            externalVarsling
+        )
     }
 
-    override fun getAllNotSendingOrCanceled(olderThan: LocalDateTime): Set<Varsel> {
-        return transaction {
-            VarselDAO.select { (status eq VarselStatus.RECEIVED.name) }.toSet().stream()
-                .map { it.asVarsel() }
-                .filter { it.received.isBefore(olderThan) }
-                .collect(Collectors.toSet())
-        }
-    }
 
-    override fun getAll(): Set<Varsel> {
-        return transaction {
-            VarselDAO.selectAll().toSet().stream()
-                .map { it.asVarsel() }
-                .collect(Collectors.toSet())
-        }
-    }
 }

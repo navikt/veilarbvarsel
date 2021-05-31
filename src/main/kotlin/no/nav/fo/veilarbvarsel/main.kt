@@ -1,81 +1,40 @@
 package no.nav.fo.veilarbvarsel
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.fo.veilarbvarsel.domain.VarselType
-import no.nav.fo.veilarbvarsel.features.BackgroundJob
-import no.nav.fo.veilarbvarsel.kafka.internal.InternalEventProducer
-import no.nav.fo.veilarbvarsel.kafka.internal.KafkaInternalConsumer
-import no.nav.fo.veilarbvarsel.varsel.VarselSender
-import no.nav.fo.veilarbvarsel.varsel.VarselServiceImpl
-import org.slf4j.LoggerFactory
-import java.util.*
-
-val logger = LoggerFactory.getLogger("Main")
+import no.nav.fo.veilarbvarsel.config.ApplicationContext
+import no.nav.fo.veilarbvarsel.config.system.features.BackgroundJob
+import no.nav.fo.veilarbvarsel.config.system.healthModule
 
 fun main() {
-    val port = System.getenv("PORT")?.toInt() ?: 8080
-    val server = embeddedServer(Netty, port, module = Application::server)
+    val port = System.getenv("SERVER_PORT")?.toInt() ?: 8080
+    val server = embeddedServer(Netty, port, module = Application::mainModule)
     server.start()
 }
 
-fun Application.server() {
-    DB.connect()
-    DB.setupSchemas()
+fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()) {
+    healthModule(appContext)
 
-    val service = VarselServiceImpl()
-
-    install(BackgroundJob.BackgroundJobFeature("Kafka Internal Consumer")) {
-        job = KafkaInternalConsumer(service)
-    }
-
-    install(BackgroundJob.BackgroundJobFeature("Varsel Sender")) {
-        job = VarselSender(service)
-    }
-
-/*
-    BrukerNotifikasjonBeskjedProducer.send(
-        UUID.randomUUID().toString(),
-        "10108003980",
-        "Group_1",
-        "Dette er en test",
-        URL("https://www.nav.no"),
-        4,
-        LocalDateTime.now().plusHours(1),
-        object : KafkaCallback {
-            override fun onSuccess() {
-                logger.info("[BRUKERNOTIFIKASJON] Sent message")
-            }
-
-            override fun onFailure(exception: Exception) {
-                logger.info("[BRUKERNOTIFIKASJON] Failed to send message", exception)
-            }
-
+    install(ContentNegotiation) {
+        jackson {
+            enable(SerializationFeature.INDENT_OUTPUT)
         }
-    )
-*/
+    }
 
-//    while (true) {
-//        Thread.sleep(1000)
-//        sendVarsel()
-//    }
+    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
+        job = appContext.eventConsumer
+    }
 
+    configureShutdownHook(appContext)
 }
 
-fun sendVarsel() {
-    val transactionId = UUID.randomUUID()
-    val id = UUID.randomUUID().toString()
-
-    InternalEventProducer.createVarsel(
-        transactionId,
-        id,
-        VarselType.MELDING,
-        "12345678910",
-        "groupx",
-        "Dette er en melding",
-        4,
-        null,
-    null)
-
+private fun Application.configureShutdownHook(appContext: ApplicationContext) {
+    environment.monitor.subscribe(ApplicationStopPreparing) {
+        appContext.eventConsumer.close()
+        appContext.kvitteringProducer.close()
+    }
 }

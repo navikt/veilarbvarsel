@@ -1,0 +1,34 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: veilarbvarsel
+  namespace: pto
+  labels:
+    team: pto
+spec:
+  image: ghcr.io/navikt/veilarbvarsel/veilarbvarsel:{{version}}
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /metrics
+  liveness:
+    path: /system/isAlive
+    port: 8080
+    initialDelay: 10
+    timeout: 10
+  readyness:
+    path: /system/isReady
+    port: 8080
+    initialDelay: 10
+    timeout: 10
+  replicas:
+    min: 1
+    max: 2
+    cpuThreasholdPercentage: 50
+  resources:
+    limits:
+      cpu: "2"
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 768Mi
