@@ -31,7 +31,7 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val ktor_version = "1.5.0"
+val ktor_version = "1.5.4"
 val prometheusVersion = "1.6.6"
 val exposed_version = "0.17.13"
 val coroutines_version = "1.4.3"

@@ -1,28 +1,21 @@
 package no.nav.fo.veilarbvarsel.varsel
 
-import io.micrometer.prometheus.PrometheusMeterRegistry
-import no.nav.fo.veilarbvarsel.brukernotifikasjon.BrukernotifikasjonService
-import no.nav.fo.veilarbvarsel.dabevents.CreateVarselPayload
-import no.nav.fo.veilarbvarsel.dabevents.DabEventProducer
-import no.nav.fo.veilarbvarsel.kafka.utils.KafkaCallback
-import no.nav.fo.veilarbvarsel.varsel.domain.Varsel
-import no.nav.fo.veilarbvarsel.varsel.domain.VarselType
+import no.nav.fo.veilarbvarsel.brukernotifikasjonclient.BrukernotifikasjonClient
+import no.nav.fo.veilarbvarsel.config.kafka.utils.KafkaCallback
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 
 class VarselService(
-    private val dabEventProducer: DabEventProducer,
-    private val brukernotifikasjon: BrukernotifikasjonService,
-    private val metrics: PrometheusMeterRegistry
+    private val brukernotifikasjon: BrukernotifikasjonClient
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
 
-    fun create(transactionId: UUID, event: CreateVarselPayload) {
-        when (event.varselType) {
+    fun create(transactionId: UUID, event: CreateVarselVarselEvent) {
+        when (event.type) {
             VarselType.BESKJED -> sendBeskjed(transactionId, event)
             VarselType.OPPGAVE -> sendOppgave(transactionId, event)
         }
@@ -41,7 +34,7 @@ class VarselService(
         )
     }
 
-    private fun sendBeskjed(transactionId: UUID, event: CreateVarselPayload) {
+    private fun sendBeskjed(transactionId: UUID, event: CreateVarselVarselEvent) {
         brukernotifikasjon.sendBeskjed(
             event.toVarsel(),
             defaultCallback(
@@ -52,7 +45,7 @@ class VarselService(
         )
     }
 
-    private fun sendOppgave(transactionId: UUID, event: CreateVarselPayload) {
+    private fun sendOppgave(transactionId: UUID, event: CreateVarselVarselEvent) {
         brukernotifikasjon.sendOppgave(
             event.toVarsel(),
             defaultCallback(
@@ -80,11 +73,11 @@ class VarselService(
         }
     }
 
-    private fun CreateVarselPayload.toVarsel(): Varsel {
+    private fun CreateVarselVarselEvent.toVarsel(): Varsel {
         return Varsel(
             system,
             id,
-            varselType,
+            type,
             fodselsnummer,
             groupId,
             URL(link),

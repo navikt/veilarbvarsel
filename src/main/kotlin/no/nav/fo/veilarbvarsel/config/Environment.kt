@@ -15,7 +15,9 @@ data class KafkaEnvironment(
 )
 
 data class KafkaTopics(
-    val dabEvents: String = getEnvVar("KAFKA_INTERNAL_EVENT_TOPID", "aapen-dab-events-v1-testing"),
+    val varselIncoming: String = getEnvVar("VARSEL_INCOMING_TOPIC", "privat-fo-varsel-q1"),
+    val varselKvitteringOutgoing: String = getEnvVar("VARSEL_KVITTERING_OUTGOING_TOPIC", "privat-fo-varsel-kvittering-q1"),
+
     val doknotifikasjonBeskjed: String = getEnvVar(
         "KAFKA_DOKNOTIFIKASJON_BESKJED_TOPIC",
         "aapen-brukernotifikasjon-nyBeskjed-v1-testing"

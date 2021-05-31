@@ -1,4 +1,4 @@
-package no.nav.fo.veilarbvarsel.varsel.domain
+package no.nav.fo.veilarbvarsel.varsel
 
 import java.net.URL
 import java.time.LocalDateTime
