@@ -23,7 +23,7 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Build Artifacts
-        run: ./gradlew clean build
+        run: mvn clean package
       - name: Build and Push Docker images
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
