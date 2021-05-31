@@ -1,20 +1,21 @@
-package no.nav.fo.veilarbvarsel.events.skal_slettes
+package no.nav.fo.veilarbvarsel.varsel
 
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
-import no.nav.fo.veilarbvarsel.varsel.VarselEventProducer
-import no.nav.fo.veilarbvarsel.varsel.CreateVarselVarselEvent
-import no.nav.fo.veilarbvarsel.varsel.Done
-import no.nav.fo.veilarbvarsel.varsel.DoneVarselEvent
-import no.nav.fo.veilarbvarsel.varsel.Varsel
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.*
 
 fun Route.varselApi(varselEventProducer: VarselEventProducer) {
+
+    val logger = LoggerFactory.getLogger(javaClass)
+
     route("/varsel") {
 
-        post("/create") {
+        post {
             val varsel = call.receive<Varsel>()
             varselEventProducer.send(
                 CreateVarselVarselEvent(
@@ -32,6 +33,9 @@ fun Route.varselApi(varselEventProducer: VarselEventProducer) {
                     varsel.externalVarsling
                 )
             )
+
+            call.respond(HttpStatusCode.Created)
+
         }
 
         post("/done") {
@@ -46,6 +50,8 @@ fun Route.varselApi(varselEventProducer: VarselEventProducer) {
                     done.groupId
                 )
             )
+
+            call.respond(HttpStatusCode.Created)
         }
     }
 }
