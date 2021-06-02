@@ -36,3 +36,6 @@ spec:
     - configmap: pto-config
   vault:
     enabled: true
+    paths:
+      - kvPath: /serviceuser/data/dev/srvveilarbvarsel
+        mountPath: /var/run/secrets/nais.io/service_user
