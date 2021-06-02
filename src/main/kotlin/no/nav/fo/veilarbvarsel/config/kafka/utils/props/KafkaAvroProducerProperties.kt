@@ -11,7 +11,7 @@ data class KafkaAvroProducerProperties(val env: KafkaEnvironment) {
     fun getProperties(): Properties {
         val properties = Properties()
 
-        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = "${env.host}:${env.port}"
+        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = env.bootstrapServers
         properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
         properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
         properties[AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = env.schemaRegistryUrl

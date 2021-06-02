@@ -27,7 +27,7 @@ class VarselEventProducer(
     private fun getProperties(): Properties {
         val properties = Properties()
 
-        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = "${env.host}:${env.port}"
+        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = env.bootstrapServers
         properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaJsonSerializer::class.java
 

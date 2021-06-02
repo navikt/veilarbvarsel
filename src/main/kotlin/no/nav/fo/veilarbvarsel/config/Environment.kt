@@ -8,7 +8,7 @@ data class Environment(
 )
 
 data class KafkaEnvironment(
-    val bootstrapServers: String = getEnvVar("KAFKA_BROKERS_URL", "$host:$port"),
+    val bootstrapServers: String = getEnvVar("KAFKA_BROKERS_URL", "localhost:29092"),
     val schemaRegistryUrl: String = getEnvVar("KAFKA_SCHEMAS_URL", "http://localhost:8081"),
 )
 
