@@ -42,7 +42,9 @@ abstract class KafkaConsumerWrapper<K, V>(
 
         consumer.use {
             while (!shutdown) {
-                val records = consumer.poll(Duration.ofMillis(100))
+                val records = consumer.poll(Duration.ofMillis(5000))
+
+                logger.info("Getting records from $topics. size: ${records.count()}")
 
                 records.iterator().forEach {
                     handle(it.value())

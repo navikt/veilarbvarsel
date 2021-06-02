@@ -16,6 +16,8 @@ class KafkaProducerWrapper<K, V>(
     private val producer: KafkaProducer<K, V> = KafkaProducer(properties)
 
     fun send(key: K, event: V, callback: KafkaCallback?) {
+        log.info("[$topic]: $key: $event")
+
         ProducerRecord(topic, key, event).let {
             producer.send((it)) { _, exception ->
                 if (exception == null) {
