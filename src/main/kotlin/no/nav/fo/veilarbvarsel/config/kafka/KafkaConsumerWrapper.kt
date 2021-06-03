@@ -28,7 +28,8 @@ abstract class KafkaConsumerWrapper<K, V>(
         props["key.deserializer"] = StringDeserializer::class.java
         props["value.deserializer"] = KafkaEventDeserializer::class.java
         props["max.poll.records"] = 1
-        props["max.partition.fetch.bytes"] = 1048576/2
+        props["max.partition.fetch.bytes"] = 1048576 / 2
+        props["auto.offset.reset"] = "earliest"
     }
 
     abstract fun handle(data: V)
