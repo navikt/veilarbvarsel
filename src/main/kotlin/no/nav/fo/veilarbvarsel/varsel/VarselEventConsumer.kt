@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 class VarselEventConsumer(
     env: KafkaEnvironment,
     systemUser: String,
-    topics: List<String>,
+    topic: String,
     val service: VarselService
-) : KafkaConsumerWrapper<String, VarselEvent>(env, systemUser, topics) {
+) : KafkaConsumerWrapper<String, VarselEvent>(env, systemUser, topic) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 

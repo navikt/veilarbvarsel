@@ -48,7 +48,7 @@ class ApplicationContext {
     val eventConsumer = VarselEventConsumer(
         env = environment.kafka,
         systemUser = environment.systemUser,
-        topics = listOf(environment.kafkaTopics.varselIncoming),
+        topic = environment.kafkaTopics.varselIncoming,
         service = varselService
     )
 }
