@@ -16,7 +16,7 @@ spec:
     port: 8080
     initialDelay: 10
     timeout: 10
-  readyness:
+  readiness:
     path: /isReady
     port: 8080
     initialDelay: 10
