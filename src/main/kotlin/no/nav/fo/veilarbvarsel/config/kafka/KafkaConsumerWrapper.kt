@@ -75,17 +75,24 @@ abstract class KafkaConsumerWrapper<K, V>(
         }
 
         consumer.use {
-            while (!shutdown) {
-                val records = consumer.poll(Duration.ofMillis(5000))
+            try {
+                while (!shutdown) {
+                    val records = consumer.poll(Duration.ofMillis(5000))
 
-                logger.info("Getting records from $topics. size: ${records.count()}")
+                    logger.info("Getting records from $topics. size: ${records.count()}")
 
-                records.iterator().forEach {
-                    handle(it.value())
+                    records.iterator().forEach {
+                        handle(it.value())
+                    }
                 }
+            } catch (e: Exception) {
+                logger.error("Got exception", e)
             }
+
+            logger.info("Outside while loop?")
         }
 
+        logger.info("End of run. $shutdown")
         consumer.close()
         running = false
     }
