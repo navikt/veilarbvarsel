@@ -7,7 +7,6 @@ import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.config.ApplicationContext
-import no.nav.fo.veilarbvarsel.config.system.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.config.system.healthModule
 
 fun main() {
@@ -31,14 +30,9 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
     appContext.eventConsumer.run()
 
-    configureShutdownHook(appContext)
-}
-
-private fun Application.configureShutdownHook(appContext: ApplicationContext) {
-    environment.monitor.subscribe(ApplicationStopPreparing) {
-
-
-        appContext.eventConsumer.close()
-        //appContext.kvitteringProducer.close()
+    while (true) {
+        Thread.sleep(1000)
+        println("Heartbeat")
     }
+
 }
