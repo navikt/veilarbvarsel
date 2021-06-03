@@ -12,12 +12,12 @@ spec:
     enabled: true
     path: /metrics
   liveness:
-    path: /system/isAlive
+    path: /isAlive
     port: 8080
     initialDelay: 10
     timeout: 10
   readyness:
-    path: /system/isReady
+    path: /isReady
     port: 8080
     initialDelay: 10
     timeout: 10
