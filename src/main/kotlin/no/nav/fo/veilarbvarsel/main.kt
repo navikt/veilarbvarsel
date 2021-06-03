@@ -35,6 +35,6 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 private fun Application.configureShutdownHook(appContext: ApplicationContext) {
     environment.monitor.subscribe(ApplicationStopPreparing) {
         appContext.eventConsumer.close()
-        appContext.kvitteringProducer.close()
+        //appContext.kvitteringProducer.close()
     }
 }

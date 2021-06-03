@@ -15,34 +15,35 @@ class ApplicationContext {
 
     val metrics = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-    val kvitteringProducer = VarselEventProducer(
-        env = environment.kafka,
-        topic = environment.kafkaTopics.varselKvitteringOutgoing
-    )
+//    val kvitteringProducer = VarselEventProducer(
+//        env = environment.kafka,
+//        topic = environment.kafkaTopics.varselKvitteringOutgoing
+//    )
 
-    val varselProducer = VarselEventProducer(
-        env = environment.kafka,
-        topic = environment.kafkaTopics.varselIncoming
-    )
+//    val varselProducer = VarselEventProducer(
+//        env = environment.kafka,
+//        topic = environment.kafkaTopics.varselIncoming
+//    )
 
 
-    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonBeskjed
-    )
-    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonOppgave
-    )
-    val doneProducer = BrukernotifikasjonDoneProducer(
-        env = environment.kafka,
-        systemUser = environment.systemUser,
-        topic = environment.kafkaTopics.doknotifikasjonDone
-    )
+//    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonBeskjed
+//    )
+//    val oppgaveProducer = BrukernotifikasjonOppgaveProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonOppgave
+//    )
+//    val doneProducer = BrukernotifikasjonDoneProducer(
+//        env = environment.kafka,
+//        systemUser = environment.systemUser,
+//        topic = environment.kafkaTopics.doknotifikasjonDone
+//    )
 
-    val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+    //val brukernotifikasjonClient = BrukernotifikasjonClient(beskjedProducer, oppgaveProducer, doneProducer)
+    val brukernotifikasjonClient = BrukernotifikasjonClient()
     val varselService = VarselService(brukernotifikasjonClient)
 
     val eventConsumer = VarselEventConsumer(
