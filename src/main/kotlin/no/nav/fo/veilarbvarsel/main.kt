@@ -8,14 +8,21 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.config.ApplicationContext
 import no.nav.fo.veilarbvarsel.config.system.healthModule
+import org.slf4j.LoggerFactory
 
 fun main() {
+    val logger = LoggerFactory.getLogger("Main")
+
     val port = System.getenv("SERVER_PORT")?.toInt() ?: 8080
     val server = embeddedServer(Netty, port, module = Application::mainModule)
     server.start()
+
+    logger.info("I be ded")
 }
 
 fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()) {
+    val logger = LoggerFactory.getLogger(javaClass)
+
     healthModule(appContext)
 
     install(ContentNegotiation) {
@@ -32,7 +39,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
     while (true) {
         Thread.sleep(1000)
-        println("Heartbeat")
+        logger.info("Heartbeat")
     }
 
 }
