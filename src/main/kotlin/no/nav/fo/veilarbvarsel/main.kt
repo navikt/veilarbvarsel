@@ -36,10 +36,4 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 //    }
 
     appContext.eventConsumer.run()
-
-    while (true) {
-        Thread.sleep(1000)
-        logger.info("Heartbeat")
-    }
-
 }
