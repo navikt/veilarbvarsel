@@ -25,15 +25,19 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         }
     }
 
-    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
-        job = appContext.eventConsumer
-    }
+//    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
+//        job = appContext.eventConsumer
+//    }
+
+    appContext.eventConsumer.run()
 
     configureShutdownHook(appContext)
 }
 
 private fun Application.configureShutdownHook(appContext: ApplicationContext) {
     environment.monitor.subscribe(ApplicationStopPreparing) {
+
+
         appContext.eventConsumer.close()
         //appContext.kvitteringProducer.close()
     }
