@@ -25,7 +25,7 @@ abstract class KafkaConsumerWrapper<K, V>(
 
     private val props = Properties()
 
-    val consumerClient: KafkaConsumerClient<K, V>
+    val consumerClient: KafkaConsumerClient<String, String>
 
     private var shutdown = false
     private var running = false
@@ -34,7 +34,7 @@ abstract class KafkaConsumerWrapper<K, V>(
 
         val credentials = getCredentials("service_user")
 
-        consumerClient = KafkaConsumerClientBuilder.builder<K, V>()
+        consumerClient = KafkaConsumerClientBuilder.builder<String, String>()
             .withProps(onPremDefaultConsumerProperties(CONSUMER_GROUP_ID, env.bootstrapServers, credentials))
             .withConsumers(topicConsumers())
             .build()
@@ -52,8 +52,8 @@ abstract class KafkaConsumerWrapper<K, V>(
     abstract fun handle(data: V)
 
 
-    fun topicConsumers(): Map<String, TopicConsumer<K, V>> {
-        val map = mutableMapOf<String, TopicConsumer<K, V>>()
+    fun topicConsumers(): Map<String, TopicConsumer<String, String>> {
+        val map = mutableMapOf<String, TopicConsumer<String, String>>()
 
         val handler = Test()
         map[topics] = jsonConsumer(VarselEvent::class.java, handler::handle)
