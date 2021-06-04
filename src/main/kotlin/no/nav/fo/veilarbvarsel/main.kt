@@ -7,6 +7,7 @@ import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.fo.veilarbvarsel.config.ApplicationContext
+import no.nav.fo.veilarbvarsel.config.system.features.BackgroundJob
 import no.nav.fo.veilarbvarsel.config.system.healthModule
 import org.slf4j.LoggerFactory
 
@@ -31,9 +32,9 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         }
     }
 
-//    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
-//        job = appContext.eventConsumer
-//    }
+    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
+        job = appContext.eventConsumer
+    }
 
-    appContext.eventConsumer.run()
+//    appContext.eventConsumer.run()
 }
