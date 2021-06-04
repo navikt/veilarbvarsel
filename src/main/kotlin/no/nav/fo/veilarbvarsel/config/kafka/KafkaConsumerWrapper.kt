@@ -27,19 +27,19 @@ abstract class KafkaConsumerWrapper<K, V>(
 
     private val props = Properties()
 
-    //val consumerClient: KafkaConsumerClient<String, String>
+    val consumerClient: KafkaConsumerClient<String, String>
 
     private var shutdown = false
     private var running = false
 
     init {
 
-//        val credentials = getCredentials("service_user")
-//
-//        consumerClient = KafkaConsumerClientBuilder.builder<String, String>()
-//            .withProps(onPremDefaultConsumerProperties(CONSUMER_GROUP_ID, env.bootstrapServers, credentials))
-//            .withConsumers(topicConsumers())
-//            .build()
+        val credentials = getCredentials("service_user")
+
+        consumerClient = KafkaConsumerClientBuilder.builder<String, String>()
+            .withProps(onPremDefaultConsumerProperties(CONSUMER_GROUP_ID, env.bootstrapServers, credentials))
+            .withConsumers(topicConsumers())
+            .build()
 
 
 //        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = env.bootstrapServers
@@ -66,46 +66,46 @@ abstract class KafkaConsumerWrapper<K, V>(
     override fun run() {
         logger.info("Starting Kafka Consumer on topics $topics")
 
-        //consumerClient.start()
+        consumerClient.start()
 
         running = true
-        val credentials = getCredentials("service_user")
-        val consumer = KafkaConsumer<K, V>(onPremDefaultConsumerProperties(CONSUMER_GROUP_ID, env.bootstrapServers, credentials)).apply {
-            subscribe(listOf(topics))
-        }
-
-        consumer.use {
-            try {
-                while (!shutdown) {
-                    val records = consumer.poll(Duration.ofMillis(5000))
-
-                    logger.info("Getting records from $topics. size: ${records.count()}")
-
-                    records.iterator().forEach {
-                        handle(it.value())
-                    }
-                }
-            } catch (e: Exception) {
-                logger.error("Got exception", e)
-            }
-
-            logger.info("Outside while loop?")
-        }
-
-        logger.info("End of run. $shutdown")
-        consumer.close()
+//        val credentials = getCredentials("service_user")
+//        val consumer = KafkaConsumer<K, V>(onPremDefaultConsumerProperties(CONSUMER_GROUP_ID, env.bootstrapServers, credentials)).apply {
+//            subscribe(listOf(topics))
+//        }
+//
+//        consumer.use {
+//            try {
+//                while (!shutdown) {
+//                    val records = consumer.poll(Duration.ofMillis(5000))
+//
+//                    logger.info("Getting records from $topics. size: ${records.count()}")
+//
+//                    records.iterator().forEach {
+//                        handle(it.value())
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                logger.error("Got exception", e)
+//            }
+//
+//            logger.info("Outside while loop?")
+//        }
+//
+//        logger.info("End of run. $shutdown")
+//        consumer.close()
         running = false
     }
 
     override fun close() {
         logger.info("Closing Kafka Consumer on topics $topics...")
 
-        //consumerClient.stop()
+        consumerClient.stop()
 
-        shutdown = true
-        while (running) {
-            Thread.sleep(100)
-        }
+//        shutdown = true
+//        while (running) {
+//            Thread.sleep(100)
+//        }
 
         logger.info("Kafka Consumer on topics $topics closed!")
     }
