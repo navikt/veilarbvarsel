@@ -32,9 +32,9 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         }
     }
 
-//    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
-//        job = appContext.eventConsumer
-//    }
+    install(BackgroundJob.BackgroundJobFeature("Events Consumer")) {
+        job = appContext.eventConsumer
+    }
 
-    appContext.eventConsumer.run()
+    //appContext.eventConsumer.run()
 }
