@@ -20,10 +20,10 @@ class ApplicationContext {
 //        topic = environment.kafkaTopics.varselKvitteringOutgoing
 //    )
 
-    val varselProducer = VarselEventProducer(
-        env = environment.kafka,
-        topic = environment.kafkaTopics.varselIncoming
-    )
+//    val varselProducer = VarselEventProducer(
+//        env = environment.kafka,
+//        topic = environment.kafkaTopics.varselIncoming
+//    )
 
 
 //    val beskjedProducer = BrukernotifikasjonBeskjedProducer(
