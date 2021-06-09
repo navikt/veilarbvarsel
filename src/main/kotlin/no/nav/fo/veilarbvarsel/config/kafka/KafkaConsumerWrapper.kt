@@ -15,7 +15,6 @@ import java.util.*
 
 abstract class KafkaConsumerWrapper<K, V>(
     val env: KafkaEnvironment,
-    systemUser: String,
     private val topics: String
 ) : ClosableJob {
     val CONSUMER_GROUP_ID = "veilarbvarsel-consumer"
@@ -40,14 +39,13 @@ abstract class KafkaConsumerWrapper<K, V>(
             .build()
     }
 
-    abstract fun handle(data: V)
+    abstract fun handle(data: VarselEvent)
 
 
     fun topicConsumers(): Map<String, TopicConsumer<String, String>> {
         val map = mutableMapOf<String, TopicConsumer<String, String>>()
 
-        val handler = Test()
-        map[topics] = jsonConsumer(VarselEvent::class.java, handler::handle)
+        map[topics] = jsonConsumer(VarselEvent::class.java, this::handle)
 
         return map
     }

@@ -17,8 +17,6 @@ fun main() {
     val port = System.getenv("SERVER_PORT")?.toInt() ?: 8080
     val server = embeddedServer(Netty, port, module = Application::mainModule)
     server.start()
-
-    logger.info("I be ded")
 }
 
 fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()) {
