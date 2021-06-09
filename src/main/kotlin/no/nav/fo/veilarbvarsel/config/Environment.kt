@@ -18,15 +18,15 @@ data class KafkaTopics(
 
     val doknotifikasjonBeskjed: String = getEnvVar(
         "KAFKA_DOKNOTIFIKASJON_BESKJED_TOPIC",
-        "aapen-brukernotifikasjon-nyBeskjed-v1-testing"
+        "aapen-brukernotifikasjon-nyBeskjed-v1"
     ),
     val doknotifikasjonOppgave: String = getEnvVar(
         "KAFKA_DOKNOTIFIKASJON_OPPGAVE_TOPIC",
-        "aapen-brukernotifikasjon-nyOppgave-v1-testing"
+        "aapen-brukernotifikasjon-nyBeskjed-v1"
     ),
     val doknotifikasjonDone: String = getEnvVar(
         "KAFKA_DOKNOTIFIKASJON_DONE_TOPIC",
-        "aapen-brukernotifikasjon-nyDone-v1-testing"
+        "aapen-brukernotifikasjon-done-v1"
     )
 )
 
