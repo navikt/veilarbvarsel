@@ -12,12 +12,12 @@ spec:
     enabled: true
     path: /metrics
   liveness:
-    path: /isAlive
+    path: veilarbvarsel/isAlive
     port: 8080
     initialDelay: 20
     timeout: 20
   readiness:
-    path: /isReady
+    path: veilarbvarsel/isReady
     port: 8080
     initialDelay: 20
     timeout: 20
