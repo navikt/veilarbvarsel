@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>veilarbvarsel</artifactId>
+        <groupId>no.nav.fo</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>brukernotifikasjon</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>no.nav.fo</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+
+        <!-- BEGIN NAV DEPENDENCIES -->
+        <dependency>
+            <groupId>com.github.navikt</groupId>
+            <artifactId>doknotifikasjon-schemas</artifactId>
+            <version>${doknotifikasjon-schemas-version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.navikt</groupId>
+            <artifactId>brukernotifikasjon-schemas</artifactId>
+            <version>${brukernotifikasjon-schemas-version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- END NAV DEPENDENCIES -->
+
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.10.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-streams-avro-serde</artifactId>
+            <version>5.2.1</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

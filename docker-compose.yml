@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-# Kafka
+  # Kafka
   zookeeper:
     container_name: zookeeper
     networks:
@@ -71,34 +71,34 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka.dittnav.docker-internal:9092"
       SCHEMA_REGISTRY_HOST_NAME: "schema-registry.dittnav.docker-internal"
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
-# Database
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=veilarbvarsel
-    ports:
-      - 5100:5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-# IBM MQ (Docs: https://github.com/ibm-messaging/mq-container/blob/master/docs/developer-config.md)
-  mqseries:
-    image: ibmcom/mq:latest
-    ports:
-      - "1414:1414"
-      - "9443:9443"
-    hostname: mq
-    environment:
-      - LICENSE=accept
-      - MQ_QMGR_NAME=QM1
-    container_name: mqserver
-    stdin_open: true
-    tty: true
-    restart: always
+  # Database
+#  postgres:
+#    image: 'postgres:latest'
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=password
+#      - POSTGRES_DB=veilarbvarsel
+#    ports:
+#      - 5100:5432
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U postgres"]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+#  # IBM MQ (Docs: https://github.com/ibm-messaging/mq-container/blob/master/docs/developer-config.md)
+#  mqseries:
+#    image: ibmcom/mq:latest
+#    ports:
+#      - "1414:1414"
+#      - "9443:9443"
+#    hostname: mq
+#    environment:
+#      - LICENSE=accept
+#      - MQ_QMGR_NAME=QM1
+#    container_name: mqserver
+#    stdin_open: true
+#    tty: true
+#    restart: always
 
 networks:
   dittnav.docker-internal:

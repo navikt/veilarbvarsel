@@ -1,0 +1,27 @@
+server:
+  port: 9001
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info,metric
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: baeldung
+    bootstrap-servers: localhost:29092
+    schema-registry: http://localhost:8081
+test:
+  topic: embedded-test-topic
+
+topics:
+  dab:
+    varsel: privat-fo-varsel-q1
+  doknotifikasjon:
+    beskjed: aapen-brukernotifikasjon-nyBeskjed-v1
+    oppgave: aapen-brukernotifikasjon-nyOppgave-v1
+    done: aapen-brukernotifikasjon-done-v1
+application:
+  systemUser: veilarbvarsel
+

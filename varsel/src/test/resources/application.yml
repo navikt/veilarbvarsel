@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: baeldung
+    bootstrap-servers: localhost:9092
+topics:
+  dabvarsel: privat-fo-varsel-q1
+  doknotifikasjon:
+    beskjed: aapen-brukernotifikasjon-nyBeskjed-v1
+    oppgave: aapen-brukernotifikasjon-nyOppgave-v1
+    done: aapen-brukernotifikasjon-done-v1
