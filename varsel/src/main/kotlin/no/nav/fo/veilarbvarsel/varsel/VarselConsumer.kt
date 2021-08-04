@@ -15,7 +15,7 @@ class VarselConsumer(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @KafkaListener(topics = ["\${topics.dab.varsel}"], groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = ["\${topics.dab.varsel}"], groupId = "veilarbvarsel")
     fun receive(event: VarselEvent) {
         when (event) {
             is CreateVarselEvent -> brukernotifikasjonService.sendVarsel(event.toVarsel(), object : Callback {
