@@ -1,5 +1,7 @@
 package no.nav.fo.veilarbvarsel.varsel.configuration
 
+import no.nav.common.kafka.util.KafkaPropertiesPreset
+import no.nav.common.utils.NaisUtils
 import no.nav.fo.veilarbvarsel.varsel.events.VarselEvent
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -29,10 +31,7 @@ class VarselKafkaConfiguration {
 
     @Bean
     fun consumerFactory(): ConsumerFactory<String, VarselEvent> {
-        val props: MutableMap<String, Any> = HashMap()
-        props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
-        props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
-        return DefaultKafkaConsumerFactory(props, StringDeserializer(), JsonDeserializer(VarselEvent::class.java))
+        return DefaultKafkaConsumerFactory(properties(), StringDeserializer(), JsonDeserializer(VarselEvent::class.java))
     }
 
     @Bean
@@ -45,17 +44,22 @@ class VarselKafkaConfiguration {
 
     @Bean
     fun producerFactory(): ProducerFactory<String, VarselEvent> {
-        val props = mutableMapOf<String, Any>()
-
-        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
-        props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
-
-        return DefaultKafkaProducerFactory(props)
+        return DefaultKafkaProducerFactory(properties())
     }
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, VarselEvent> {
         return KafkaTemplate(producerFactory())
+    }
+
+    private fun properties(): Map<String, Any> {
+        val credentials = NaisUtils.getCredentials("service_user")
+        val properties = KafkaPropertiesPreset.onPremDefaultProducerProperties("VEILARBVARSEL", brokers, credentials)
+
+        properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
+        properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+
+        return properties.map { it.key.toString() to it.value }.toMap()
     }
 }
