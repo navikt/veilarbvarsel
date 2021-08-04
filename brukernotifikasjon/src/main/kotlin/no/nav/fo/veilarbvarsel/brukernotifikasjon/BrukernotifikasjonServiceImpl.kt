@@ -7,6 +7,7 @@ import no.nav.brukernotifikasjon.schemas.Oppgave
 import no.nav.brukernotifikasjon.schemas.builders.BeskjedBuilder
 import no.nav.brukernotifikasjon.schemas.builders.DoneBuilder
 import no.nav.brukernotifikasjon.schemas.builders.OppgaveBuilder
+import no.nav.brukernotifikasjon.schemas.builders.domain.PreferertKanal
 import no.nav.fo.veilarbvarsel.core.domain.Varsel
 import no.nav.fo.veilarbvarsel.core.domain.VarselType
 import no.nav.fo.veilarbvarsel.core.ports.BrukernotifikasjonService
@@ -75,6 +76,7 @@ class BrukernotifikasjonServiceImpl(
             .withTekst(varsel.message)
             .withLink(varsel.link)
             .withSikkerhetsnivaa(varsel.sikkerhetsnivaa)
+            .withPrefererteKanaler(PreferertKanal.SMS)
 
         if (varsel.visibleUntil != null) {
             beskjedBuilder.withSynligFremTil(varsel.visibleUntil)
@@ -101,6 +103,7 @@ class BrukernotifikasjonServiceImpl(
             .withTekst(varsel.message)
             .withLink(varsel.link)
             .withSikkerhetsnivaa(varsel.sikkerhetsnivaa)
+            .withPrefererteKanaler(PreferertKanal.SMS)
             .build()
 
         oppgaveProducer.send(oppgaveTopic, nokkel, oppgave).addCallback(
