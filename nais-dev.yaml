@@ -10,9 +10,9 @@ spec:
   port: 8080
   prometheus:
     enabled: true
-    path: veilarbvarsel/internal/prometheus
+    path: /internal/prometheus
   liveness:
-    path: veilarbvarsel/internal/isAlive
+    path: /internal/isAlive
     port: 8080
     initialDelay: 60
     timeout: 10
