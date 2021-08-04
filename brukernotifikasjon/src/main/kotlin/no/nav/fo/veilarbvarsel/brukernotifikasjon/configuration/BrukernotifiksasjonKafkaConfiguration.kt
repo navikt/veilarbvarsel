@@ -63,7 +63,7 @@ class BrukernotifiksasjonKafkaConfiguration {
 
     private fun avroProperties(): Map<String, Any> {
         val credentials = NaisUtils.getCredentials("service_user")
-        val properties = KafkaPropertiesPreset.onPremDefaultProducerProperties("VEILARBVARSEL", brokers, credentials)
+        val properties = KafkaPropertiesPreset.onPremDefaultProducerProperties(groupId, brokers, credentials)
 
         properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
         properties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java

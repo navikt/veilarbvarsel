@@ -54,7 +54,7 @@ class VarselKafkaConfiguration {
 
     private fun properties(): Map<String, Any> {
         val credentials = NaisUtils.getCredentials("service_user")
-        val properties = KafkaPropertiesPreset.onPremDefaultProducerProperties("VEILARBVARSEL", brokers, credentials)
+        val properties = KafkaPropertiesPreset.onPremDefaultProducerProperties(groupId, brokers, credentials)
 
         properties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = brokers
         properties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
